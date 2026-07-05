@@ -194,3 +194,4 @@ defmodule CapTableWeb.CapTableLive do
     """
   end
 end
+
