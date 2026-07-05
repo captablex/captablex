@@ -35,7 +35,7 @@ defmodule CapTableWeb.CapTableLive do
      |> assign(:total_shares_authorized, CapTable.get_total_shares_authorized())}
   end
 
-  def handle_info({:security_issued, security}, socket) do
+  def handle_info({:security_issued, _security}, socket) do
     {:noreply,
      socket
      |> assign(:securities, CapTable.list_securities())
@@ -104,7 +104,7 @@ defmodule CapTableWeb.CapTableLive do
             <div class="rounded-xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
               <p class="text-sm font-medium text-slate-400">Total Authorized</p>
               <p class="mt-2 text-3xl font-bold text-white">
-                {Number.Delimit.number_to_delimited(@total_shares_authorized)}
+                {format_number(@total_shares_authorized)}
               </p>
             </div>
             
@@ -112,7 +112,7 @@ defmodule CapTableWeb.CapTableLive do
             <div class="rounded-xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
               <p class="text-sm font-medium text-slate-400">Outstanding</p>
               <p class="mt-2 text-3xl font-bold text-white">
-                {Number.Delimit.number_to_delimited(@total_shares_outstanding)}
+                {format_number(@total_shares_outstanding)}
               </p>
             </div>
             
@@ -164,7 +164,7 @@ defmodule CapTableWeb.CapTableLive do
                         </div>
                       </td>
                       <td class="px-4 py-4 text-right text-sm text-slate-300">
-                        {Number.Delimit.number_to_delimited(data.shares)}
+                        {format_number(data.shares)}
                       </td>
                       <td class="px-4 py-4 text-right">
                         <span class="text-sm font-semibold text-white">{data.percentage}%</span>
