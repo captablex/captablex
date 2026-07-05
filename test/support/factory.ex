@@ -25,8 +25,7 @@ defmodule CapTable.Factory do
       class_type: Map.get(attrs, :class_type, "common"),
       name: Map.get(attrs, :name, "Common Stock"),
       shares_authorized: Map.get(attrs, :shares_authorized, 10_000_000),
-      par_value: Map.get(attrs, :par_value, Decimal.new("0.01")),
-      price_per_share: Map.get(attrs, :price_per_share, Decimal.new("1.00"))
+      par_value: Map.get(attrs, :par_value, Decimal.new("0.01"))
     }
   end
 
@@ -46,7 +45,6 @@ defmodule CapTable.Factory do
       stock_class_id: stock_class.id,
       shares: Map.get(attrs, :shares, 1_000_000),
       issue_date: Map.get(attrs, :issue_date, Date.utc_today()),
-      price_per_share: Map.get(attrs, :price_per_share, Decimal.new("1.00")),
       certificate_id:
         Map.get(attrs, :certificate_id, "CERT-#{System.unique_integer([:positive])}")
     }
@@ -69,7 +67,6 @@ defmodule CapTable.Factory do
       transaction_type: Map.get(attrs, :transaction_type, "issuance"),
       transaction_date: Map.get(attrs, :transaction_date, Date.utc_today()),
       quantity: Map.get(attrs, :quantity, 1_000_000),
-      price_per_share: Map.get(attrs, :price_per_share, Decimal.new("1.00")),
       notes: Map.get(attrs, :notes)
     }
   end
