@@ -66,8 +66,7 @@ defmodule CapTable.Factory do
       security_id: security.id,
       transaction_type: Map.get(attrs, :transaction_type, "issuance"),
       transaction_date: Map.get(attrs, :transaction_date, Date.utc_today()),
-      quantity: Map.get(attrs, :quantity, 1_000_000),
-      notes: Map.get(attrs, :notes)
+      quantity: Map.get(attrs, :quantity, 1_000_000)
     }
   end
 end
