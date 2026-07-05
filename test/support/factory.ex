@@ -12,6 +12,8 @@ defmodule CapTable.Factory do
   end
 
   def build(:stakeholder, attrs) do
+    attrs = Enum.into(attrs, %{})
+
     %Stakeholder{
       name: Map.get(attrs, :name, "Test Stakeholder"),
       stakeholder_type: Map.get(attrs, :stakeholder_type, "individual"),
@@ -21,6 +23,8 @@ defmodule CapTable.Factory do
   end
 
   def build(:stock_class, attrs) do
+    attrs = Enum.into(attrs, %{})
+
     %StockClass{
       class_type: Map.get(attrs, :class_type, "common"),
       name: Map.get(attrs, :name, "Common Stock"),
@@ -30,6 +34,8 @@ defmodule CapTable.Factory do
   end
 
   def build(:security, attrs) do
+    attrs = Enum.into(attrs, %{})
+
     stakeholder =
       Map.get_lazy(attrs, :stakeholder, fn ->
         insert(:stakeholder)
@@ -51,6 +57,8 @@ defmodule CapTable.Factory do
   end
 
   def build(:transaction, attrs) do
+    attrs = Enum.into(attrs, %{})
+
     stakeholder =
       Map.get_lazy(attrs, :stakeholder, fn ->
         insert(:stakeholder)
