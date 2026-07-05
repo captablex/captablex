@@ -8,7 +8,7 @@
 import Config
 
 config :cap_table,
-  ecto_repos: [CapTable.Repo],
+  ecto_repos: [Captablex.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
