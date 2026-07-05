@@ -18,7 +18,9 @@ defmodule CapTableWeb.CapTableLive do
         |> stream(:transactions, CapTable.list_transactions())
 
       {:ok, socket}
+    else
       {:ok, socket}
+    end
     end
   end
 
