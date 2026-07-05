@@ -113,6 +113,68 @@ defmodule CapTableWeb.CapTableLive do
     end
   end
 
+  def handle_event("export_ocf", _params, socket) do
+    ocf_data = build_ocf_export(socket.assigns)
+    json = Jason.encode!(ocf_data, pretty: true)
+
+    {:noreply,
+     socket
+     |> push_event("download", %{
+       filename: "cap_table_ocf_#{Date.utc_today()}.json",
+       content: json,
+       mime_type: "application/json"
+     })}
+  end
+
+  defp build_ocf_export(assigns) do
+    %{
+      "ocf_version" => "1.0.0",
+      "file_type" => "OCF_MANIFEST_FILE",
+      "generated_at" => DateTime.utc_now() |> DateTime.to_iso8601(),
+      "issuer" => %{
+        "id" => "issuer-1",
+        "legal_name" => "Company Inc.",
+        "formation_date" => Date.utc_today() |> Date.to_iso8601()
+      },
+      "stakeholders" =>
+        Enum.map(assigns.stakeholders, fn stakeholder ->
+          %{
+            "id" => "stakeholder-#{stakeholder.id}",
+            "name" => %{"legal_name" => stakeholder.name},
+            "stakeholder_type" => String.upcase(stakeholder.stakeholder_type),
+            "contact_info" => %{"email" => stakeholder.email || ""}
+          }
+        end),
+      "stock_classes" =>
+        Enum.map(assigns.stock_classes, fn stock_class ->
+          %{
+            "id" => "stock-class-#{stock_class.id}",
+            "name" => stock_class.name,
+            "class_type" => String.upcase(stock_class.class_type),
+            "shares_authorized" => stock_class.shares_authorized,
+            "par_value" => Decimal.to_string(stock_class.par_value || Decimal.new("0"))
+          }
+        end),
+      "securities" =>
+        Enum.map(assigns.securities, fn security ->
+          %{
+            "id" => "security-#{security.id}",
+            "stakeholder_id" => "stakeholder-#{security.stakeholder_id}",
+            "stock_class_id" => "stock-class-#{security.stock_class_id}",
+            "quantity" => security.shares,
+            "issue_date" => Date.to_iso8601(security.issue_date),
+            "certificate_id" => security.certificate_id
+          }
+        end),
+      "summary" => %{
+        "total_authorized_shares" => assigns.total_shares_authorized,
+        "total_outstanding_shares" => assigns.total_shares_outstanding,
+        "total_stakeholders" => length(assigns.stakeholders),
+        "total_stock_classes" => length(assigns.stock_classes)
+      }
+    }
+  end
+
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
@@ -125,6 +187,12 @@ defmodule CapTableWeb.CapTableLive do
               <p class="mt-1 text-slate-400">Manage your company's equity ownership</p>
             </div>
             <div class="flex space-x-3">
+              <button
+                phx-click="export_ocf"
+                class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-700"
+              >
+                Export OCF
+              </button>
               <button
                 phx-click="open_stakeholder_modal"
                 class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-700"
