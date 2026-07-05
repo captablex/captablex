@@ -34,6 +34,30 @@ defmodule CapTableWeb.CapTableLive do
 
   defp format_number(number), do: to_string(number)
 
+  defp format_date(date) do
+    Calendar.strftime(date, "%b %d, %Y")
+  end
+
+  defp transaction_icon(type) do
+    case type do
+      "issuance" -> "hero-plus-circle"
+      "transfer" -> "hero-arrow-path"
+      "cancellation" -> "hero-x-circle"
+      "exercise" -> "hero-check-circle"
+      _ -> "hero-document"
+    end
+  end
+
+  defp transaction_color(type) do
+    case type do
+      "issuance" -> "emerald"
+      "transfer" -> "blue"
+      "cancellation" -> "red"
+      "exercise" -> "purple"
+      _ -> "slate"
+    end
+  end
+
   def handle_info({:stakeholder_created, _stakeholder}, socket) do
     {:noreply,
      socket
@@ -142,50 +166,93 @@ defmodule CapTableWeb.CapTableLive do
             </div>
           </div>
           
-    <!-- Ownership Table -->
-          <div class="rounded-xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
-            <h2 class="mb-6 text-lg font-semibold text-white">Ownership Breakdown</h2>
-            <div class="overflow-hidden rounded-lg border border-slate-800">
-              <table class="w-full">
-                <thead>
-                  <tr class="border-b border-slate-800 bg-slate-950/50">
-                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      Stakeholder
-                    </th>
-                    <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      Shares
-                    </th>
-                    <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      Ownership %
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-800">
-                  <%= for {_id, data} <- @ownership_breakdown do %>
-                    <tr class="hover:bg-slate-800/30">
-                      <td class="px-4 py-4">
-                        <div class="flex items-center space-x-3">
-                          <div class="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-500/20 text-sm font-semibold text-cyan-400">
-                            {String.first(data.stakeholder.name)}
-                          </div>
-                          <div>
-                            <p class="text-sm font-medium text-white">{data.stakeholder.name}</p>
-                            <p class="text-xs text-slate-400">
-                              {String.capitalize(data.stakeholder.stakeholder_type)}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="px-4 py-4 text-right text-sm text-slate-300">
-                        {format_number(data.shares)}
-                      </td>
-                      <td class="px-4 py-4 text-right">
-                        <span class="text-sm font-semibold text-white">{data.percentage}%</span>
-                      </td>
-                    </tr>
-                  <% end %>
-                </tbody>
-              </table>
+    <!-- Main Grid -->
+          <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <!-- Ownership Table (2 cols) -->
+            <div class="lg:col-span-2">
+              <div class="rounded-xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
+                <h2 class="mb-6 text-lg font-semibold text-white">Ownership Breakdown</h2>
+                <div class="overflow-hidden rounded-lg border border-slate-800">
+                  <table class="w-full">
+                    <thead>
+                      <tr class="border-b border-slate-800 bg-slate-950/50">
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">
+                          Stakeholder
+                        </th>
+                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-400">
+                          Shares
+                        </th>
+                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-400">
+                          Ownership %
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800">
+                      <%= for {_id, data} <- @ownership_breakdown do %>
+                        <tr class="hover:bg-slate-800/30">
+                          <td class="px-4 py-4">
+                            <div class="flex items-center space-x-3">
+                              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-500/20 text-sm font-semibold text-cyan-400">
+                                {String.first(data.stakeholder.name)}
+                              </div>
+                              <div>
+                                <p class="text-sm font-medium text-white">{data.stakeholder.name}</p>
+                                <p class="text-xs text-slate-400">
+                                  {String.capitalize(data.stakeholder.stakeholder_type)}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="px-4 py-4 text-right text-sm text-slate-300">
+                            {format_number(data.shares)}
+                          </td>
+                          <td class="px-4 py-4 text-right">
+                            <span class="text-sm font-semibold text-white">{data.percentage}%</span>
+                          </td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            
+    <!-- Transaction History (1 col) -->
+            <div class="lg:col-span-1">
+              <div class="rounded-xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
+                <div class="mb-6 flex items-center justify-between">
+                  <h2 class="text-lg font-semibold text-white">Recent Activity</h2>
+                  <button class="text-sm text-cyan-400 hover:text-cyan-300">View All</button>
+                </div>
+                <div id="transactions" phx-update="stream" class="space-y-3">
+                  <div
+                    :for={{id, transaction} <- @streams.transactions}
+                    id={id}
+                    class="flex items-start space-x-3 rounded-lg border border-slate-800 bg-slate-950/50 p-3 transition hover:border-slate-700"
+                  >
+                    <div class={"flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-#{transaction_color(transaction.transaction_type)}-500/10"}>
+                      <.icon
+                        name={transaction_icon(transaction.transaction_type)}
+                        class={"h-5 w-5 text-#{transaction_color(transaction.transaction_type)}-400"}
+                      />
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="text-sm font-medium text-white">
+                        {String.capitalize(transaction.transaction_type)}
+                      </p>
+                      <p class="text-xs text-slate-400">{transaction.stakeholder.name}</p>
+                      <div class="mt-1 flex items-center justify-between">
+                        <p class="text-xs font-semibold text-slate-300">
+                          {format_number(transaction.quantity)} shares
+                        </p>
+                        <p class="text-xs text-slate-500">
+                          {format_date(transaction.transaction_date)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
