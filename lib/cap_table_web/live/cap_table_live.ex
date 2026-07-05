@@ -139,8 +139,7 @@ defmodule CapTableWeb.CapTableLive do
               </button>
             </div>
           </div>
-          
-    <!-- Stats Grid -->
+          <!-- Stats Grid -->
           <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
             <!-- Total Authorized -->
             <div class="rounded-xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
@@ -149,29 +148,25 @@ defmodule CapTableWeb.CapTableLive do
                 {format_number(@total_shares_authorized)}
               </p>
             </div>
-            
-    <!-- Outstanding -->
+            <!-- Outstanding -->
             <div class="rounded-xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
               <p class="text-sm font-medium text-slate-400">Outstanding</p>
               <p class="mt-2 text-3xl font-bold text-white">
                 {format_number(@total_shares_outstanding)}
               </p>
             </div>
-            
-    <!-- Stakeholders -->
+            <!-- Stakeholders -->
             <div class="rounded-xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
               <p class="text-sm font-medium text-slate-400">Stakeholders</p>
               <p class="mt-2 text-3xl font-bold text-white">{length(@stakeholders)}</p>
             </div>
-            
-    <!-- Stock Classes -->
+            <!-- Stock Classes -->
             <div class="rounded-xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
               <p class="text-sm font-medium text-slate-400">Stock Classes</p>
               <p class="mt-2 text-3xl font-bold text-white">{length(@stock_classes)}</p>
             </div>
           </div>
-          
-    <!-- Main Content Grid -->
+          <!-- Main Content Grid -->
           <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <!-- Ownership Table (2 columns) -->
             <div class="lg:col-span-2">
@@ -297,208 +292,196 @@ defmodule CapTableWeb.CapTableLive do
           </div>
         </div>
       </div>
-      <!-- Add Stakeholder Modal -->
-      <%= if @show_stakeholder_modal? do %>
-        <div
-          class="fixed inset-0 z-50 overflow-y-auto"
-          phx-click="close_stakeholder_modal"
-          phx-window-keydown="close_stakeholder_modal"
-          phx-key="escape"
-        >
-          <div class="flex min-h-screen items-center justify-center px-4">
-            <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity"></div>
-            <div
-              class="relative z-50 w-full max-w-md rounded-xl border border-slate-800 bg-slate-900 p-6 shadow-2xl"
-              phx-click={JS.stop_propagation()}
+      <!-- Add Stakeholder Modal (DaisyUI) -->
+      <input
+        type="checkbox"
+        id="stakeholder-modal"
+        class="modal-toggle"
+        checked={@show_stakeholder_modal?}
+      />
+      <div class="modal" role="dialog">
+        <div class="modal-box bg-slate-900 border border-slate-800">
+          <div class="mb-4 flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-white">Add Stakeholder</h3>
+            <button
+              phx-click="close_stakeholder_modal"
+              class="text-slate-400 hover:text-white"
             >
-              <div class="mb-4 flex items-center justify-between">
-                <h3 class="text-lg font-semibold text-white">Add Stakeholder</h3>
-                <button
-                  phx-click="close_stakeholder_modal"
-                  class="text-slate-400 hover:text-white"
-                >
-                  <.icon name="hero-x-mark" class="h-5 w-5" />
-                </button>
-              </div>
-              <form id="stakeholder-form" phx-submit="add_stakeholder" class="space-y-4">
-                <div>
-                  <label class="mb-1 block text-sm font-medium text-slate-300">Name</label>
-                  <input
-                    type="text"
-                    name="stakeholder[name]"
-                    required
-                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
-                    placeholder="Enter stakeholder name"
-                  />
-                </div>
-                <div>
-                  <label class="mb-1 block text-sm font-medium text-slate-300">Type</label>
-                  <select
-                    name="stakeholder[stakeholder_type]"
-                    required
-                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
-                  >
-                    <option value="">Select type</option>
-                    <option value="individual">Individual</option>
-                    <option value="institution">Institution</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="mb-1 block text-sm font-medium text-slate-300">Email</label>
-                  <input
-                    type="email"
-                    name="stakeholder[email]"
-                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
-                    placeholder="email@example.com"
-                  />
-                </div>
-                <div>
-                  <label class="mb-1 block text-sm font-medium text-slate-300">Tax ID</label>
-                  <input
-                    type="text"
-                    name="stakeholder[tax_id]"
-                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
-                    placeholder="XXX-XX-XXXX"
-                  />
-                </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                  <button
-                    type="button"
-                    phx-click="close_stakeholder_modal"
-                    class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-700"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    class="rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:shadow-cyan-500/40"
-                  >
-                    Add Stakeholder
-                  </button>
-                </div>
-              </form>
-            </div>
+              <.icon name="hero-x-mark" class="h-5 w-5" />
+            </button>
           </div>
+          <form id="stakeholder-form" phx-submit="add_stakeholder" class="space-y-4">
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-300">Name</label>
+              <input
+                type="text"
+                name="stakeholder[name]"
+                required
+                class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                placeholder="Enter stakeholder name"
+              />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-300">Type</label>
+              <select
+                name="stakeholder[stakeholder_type]"
+                required
+                class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+              >
+                <option value="">Select type</option>
+                <option value="individual">Individual</option>
+                <option value="institution">Institution</option>
+              </select>
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-300">Email</label>
+              <input
+                type="email"
+                name="stakeholder[email]"
+                class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                placeholder="email@example.com"
+              />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-300">Tax ID</label>
+              <input
+                type="text"
+                name="stakeholder[tax_id]"
+                class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                placeholder="XXX-XX-XXXX"
+              />
+            </div>
+            <div class="modal-action">
+              <button
+                type="button"
+                phx-click="close_stakeholder_modal"
+                class="btn btn-ghost text-slate-300"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn bg-gradient-to-r from-cyan-500 to-blue-600 border-0 text-white hover:shadow-lg hover:shadow-cyan-500/40"
+              >
+                Add Stakeholder
+              </button>
+            </div>
+          </form>
         </div>
-      <% end %>
-      <!-- Issue Shares Modal -->
-      <%= if @show_issue_shares_modal? do %>
-        <div
-          class="fixed inset-0 z-50 overflow-y-auto"
-          phx-click="close_issue_shares_modal"
-          phx-window-keydown="close_issue_shares_modal"
-          phx-key="escape"
-        >
-          <div class="flex min-h-screen items-center justify-center px-4">
-            <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity"></div>
-            <div
-              class="relative z-50 w-full max-w-md rounded-xl border border-slate-800 bg-slate-900 p-6 shadow-2xl"
-              phx-click={JS.stop_propagation()}
+        <label class="modal-backdrop" phx-click="close_stakeholder_modal">Close</label>
+      </div>
+      <!-- Issue Shares Modal (DaisyUI) -->
+      <input
+        type="checkbox"
+        id="issue-shares-modal"
+        class="modal-toggle"
+        checked={@show_issue_shares_modal?}
+      />
+      <div class="modal" role="dialog">
+        <div class="modal-box bg-slate-900 border border-slate-800">
+          <div class="mb-4 flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-white">Issue Shares</h3>
+            <button
+              phx-click="close_issue_shares_modal"
+              class="text-slate-400 hover:text-white"
             >
-              <div class="mb-4 flex items-center justify-between">
-                <h3 class="text-lg font-semibold text-white">Issue Shares</h3>
-                <button
-                  phx-click="close_issue_shares_modal"
-                  class="text-slate-400 hover:text-white"
-                >
-                  <.icon name="hero-x-mark" class="h-5 w-5" />
-                </button>
-              </div>
-              <form id="issue-shares-form" phx-submit="issue_shares" class="space-y-4">
-                <div>
-                  <label class="mb-1 block text-sm font-medium text-slate-300">Stakeholder</label>
-                  <select
-                    name="security[stakeholder_id]"
-                    required
-                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
-                  >
-                    <option value="">Select stakeholder</option>
-                    <%= for stakeholder <- @stakeholders do %>
-                      <option value={stakeholder.id}>{stakeholder.name}</option>
-                    <% end %>
-                  </select>
-                </div>
-                <div>
-                  <label class="mb-1 block text-sm font-medium text-slate-300">Stock Class</label>
-                  <select
-                    name="security[stock_class_id]"
-                    required
-                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
-                  >
-                    <option value="">Select stock class</option>
-                    <%= for stock_class <- @stock_classes do %>
-                      <option value={stock_class.id}>{stock_class.name}</option>
-                    <% end %>
-                  </select>
-                </div>
-                <div>
-                  <label class="mb-1 block text-sm font-medium text-slate-300">
-                    Number of Shares
-                  </label>
-                  <input
-                    type="number"
-                    name="security[shares]"
-                    min="1"
-                    required
-                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
-                    placeholder="1000"
-                  />
-                </div>
-                <div>
-                  <label class="mb-1 block text-sm font-medium text-slate-300">
-                    Price Per Share
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    name="security[price_per_share]"
-                    min="0"
-                    required
-                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
-                    placeholder="1.00"
-                  />
-                </div>
-                <div>
-                  <label class="mb-1 block text-sm font-medium text-slate-300">Issue Date</label>
-                  <input
-                    type="date"
-                    name="security[issue_date]"
-                    value={Date.utc_today() |> Date.to_iso8601()}
-                    required
-                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
-                  />
-                </div>
-                <div>
-                  <label class="mb-1 block text-sm font-medium text-slate-300">
-                    Certificate ID
-                  </label>
-                  <input
-                    type="text"
-                    name="security[certificate_id]"
-                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
-                    placeholder="CERT-001"
-                  />
-                </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                  <button
-                    type="button"
-                    phx-click="close_issue_shares_modal"
-                    class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-700"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    class="rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:shadow-cyan-500/40"
-                  >
-                    Issue Shares
-                  </button>
-                </div>
-              </form>
-            </div>
+              <.icon name="hero-x-mark" class="h-5 w-5" />
+            </button>
           </div>
+          <form id="issue-shares-form" phx-submit="issue_shares" class="space-y-4">
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-300">Stakeholder</label>
+              <select
+                name="security[stakeholder_id]"
+                required
+                class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+              >
+                <option value="">Select stakeholder</option>
+                <%= for stakeholder <- @stakeholders do %>
+                  <option value={stakeholder.id}>{stakeholder.name}</option>
+                <% end %>
+              </select>
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-300">Stock Class</label>
+              <select
+                name="security[stock_class_id]"
+                required
+                class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+              >
+                <option value="">Select stock class</option>
+                <%= for stock_class <- @stock_classes do %>
+                  <option value={stock_class.id}>{stock_class.name}</option>
+                <% end %>
+              </select>
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-300">
+                Number of Shares
+              </label>
+              <input
+                type="number"
+                name="security[shares]"
+                min="1"
+                required
+                class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                placeholder="1000"
+              />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-300">
+                Price Per Share
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                name="security[price_per_share]"
+                min="0"
+                required
+                class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                placeholder="1.00"
+              />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-300">Issue Date</label>
+              <input
+                type="date"
+                name="security[issue_date]"
+                value={Date.utc_today() |> Date.to_iso8601()}
+                required
+                class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+              />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-300">
+                Certificate ID
+              </label>
+              <input
+                type="text"
+                name="security[certificate_id]"
+                class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                placeholder="CERT-001"
+              />
+            </div>
+            <div class="modal-action">
+              <button
+                type="button"
+                phx-click="close_issue_shares_modal"
+                class="btn btn-ghost text-slate-300"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn bg-gradient-to-r from-cyan-500 to-blue-600 border-0 text-white hover:shadow-lg hover:shadow-cyan-500/40"
+              >
+                Issue Shares
+              </button>
+            </div>
+          </form>
         </div>
-      <% end %>
+        <label class="modal-backdrop" phx-click="close_issue_shares_modal">Close</label>
+      </div>
     </Layouts.app>
     """
   end
