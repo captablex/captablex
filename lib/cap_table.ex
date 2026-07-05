@@ -191,6 +191,17 @@ defmodule CapTable do
       {:ok, security} ->
         security = Repo.preload(security, [:stakeholder, :stock_class])
 
+        # Create a transaction record for the issuance
+        {:ok, transaction} =
+          create_transaction(%{
+            stakeholder_id: security.stakeholder_id,
+            security_id: security.id,
+            transaction_type: "issuance",
+            transaction_date: security.issue_date,
+            quantity: security.shares,
+            price_per_share: Map.get(attrs, "price_per_share") || Map.get(attrs, :price_per_share)
+          })
+
         Phoenix.PubSub.broadcast(
           CapTable.PubSub,
           "cap_table:updates",
