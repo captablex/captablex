@@ -285,7 +285,7 @@ defmodule CapTableWeb.CapTableLive do
                             {format_number(transaction.quantity)} shares
                           </p>
                           <p class="text-xs text-slate-500">
-                            {Calendar.strftime(transaction.date, "%b %d, %Y")}
+                            {Calendar.strftime(transaction.transaction_date, "%b %d, %Y")}
                           </p>
                         </div>
                       </div>
