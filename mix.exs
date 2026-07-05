@@ -1,4 +1,4 @@
-defmodule CapTable.MixProject do
+defmodule Captablex.MixProject do
   use Mix.Project
 
   def project do
