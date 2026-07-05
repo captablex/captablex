@@ -21,6 +21,19 @@ defmodule CapTableWeb.CapTableLive do
     {:ok, socket}
   end
 
+  defp format_number(number) when is_integer(number) do
+    number
+    |> Integer.to_string()
+    |> String.to_charlist()
+    |> Enum.reverse()
+    |> Enum.chunk_every(3)
+    |> Enum.join(",")
+    |> String.reverse()
+  end
+
+  defp format_number(number), do: to_string(number)
+  end
+
   def handle_info({:stakeholder_created, _stakeholder}, socket) do
     {:noreply,
      socket
