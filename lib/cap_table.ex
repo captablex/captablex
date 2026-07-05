@@ -1,4 +1,4 @@
-defmodule CapTable do
+defmodule Captablex do
   @moduledoc """
   CapTable keeps the contexts that define your domain
   and business logic.
@@ -8,7 +8,7 @@ defmodule CapTable do
   """
 
   import Ecto.Query
-  alias CapTable.Repo
+  alias Captablex.Repo
 
   defmodule Stakeholder do
     use Ecto.Schema
@@ -20,8 +20,8 @@ defmodule CapTable do
       field :email, :string
       field :tax_id, :string
 
-      has_many :securities, CapTable.SecurityIssuance
-      has_many :transactions, CapTable.Transaction
+      has_many :securities, Captablex.SecurityIssuance
+      has_many :transactions, Captablex.Transaction
 
       timestamps()
     end
@@ -45,7 +45,7 @@ defmodule CapTable do
       field :par_value, :decimal
       field :price_per_share, :decimal
 
-      has_many :securities, CapTable.SecurityIssuance
+      has_many :securities, Captablex.SecurityIssuance
 
       timestamps()
     end
@@ -68,8 +68,8 @@ defmodule CapTable do
       field :issue_date, :date
       field :certificate_id, :string
 
-      belongs_to :stakeholder, CapTable.Stakeholder
-      belongs_to :stock_class, CapTable.StockClass
+      belongs_to :stakeholder, Captablex.Stakeholder
+      belongs_to :stock_class, Captablex.StockClass
 
       timestamps()
     end
@@ -94,8 +94,8 @@ defmodule CapTable do
       field :quantity, :integer
       field :price_per_share, :decimal
 
-      belongs_to :stakeholder, CapTable.Stakeholder
-      belongs_to :security, CapTable.SecurityIssuance
+      belongs_to :stakeholder, Captablex.Stakeholder
+      belongs_to :security, Captablex.SecurityIssuance
 
       timestamps()
     end
@@ -134,8 +134,8 @@ defmodule CapTable do
     |> case do
       {:ok, stakeholder} ->
         Phoenix.PubSub.broadcast(
-          CapTable.PubSub,
-          "cap_table:updates",
+          Captablex.PubSub,
+          "captablex:updates",
           {:stakeholder_created, stakeholder}
         )
 
@@ -160,8 +160,8 @@ defmodule CapTable do
     |> case do
       {:ok, stock_class} ->
         Phoenix.PubSub.broadcast(
-          CapTable.PubSub,
-          "cap_table:updates",
+          Captablex.PubSub,
+          "captablex:updates",
           {:stock_class_created, stock_class}
         )
 
@@ -203,8 +203,8 @@ defmodule CapTable do
           })
 
         Phoenix.PubSub.broadcast(
-          CapTable.PubSub,
-          "cap_table:updates",
+          Captablex.PubSub,
+          "captablex:updates",
           {:security_issued, security}
         )
 
@@ -233,8 +233,8 @@ defmodule CapTable do
         transaction = Repo.preload(transaction, [:stakeholder, :security])
 
         Phoenix.PubSub.broadcast(
-          CapTable.PubSub,
-          "cap_table:updates",
+          Captablex.PubSub,
+          "captablex:updates",
           {:transaction_created, transaction}
         )
 
