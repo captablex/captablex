@@ -12,6 +12,10 @@ defmodule CapTableWeb.CapTableLive do
       |> assign(:ownership_breakdown, CapTable.calculate_ownership_breakdown())
       |> assign(:total_shares_outstanding, CapTable.get_total_shares_outstanding())
       |> assign(:total_shares_authorized, CapTable.get_total_shares_authorized())
+      |> assign(:show_stakeholder_modal, false)
+      |> assign(:show_issue_shares_modal, false)
+      |> assign(:stakeholder_form, to_form(%{}))
+      |> assign(:issue_shares_form, to_form(%{}))
 
     if connected?(socket) do
       Phoenix.PubSub.subscribe(CapTable.PubSub, "cap_table:updates")
@@ -84,33 +88,84 @@ defmodule CapTableWeb.CapTableLive do
     {:noreply, stream_insert(socket, :transactions, transaction, at: 0)}
   end
 
+  def handle_event("open_stakeholder_modal", _params, socket) do
+    {:noreply, assign(socket, :show_stakeholder_modal, true)}
+  end
+
+  def handle_event("close_stakeholder_modal", _params, socket) do
+    {:noreply,
+     socket
+     |> assign(:show_stakeholder_modal, false)
+     |> assign(:stakeholder_form, to_form(%{}))}
+  end
+
+  def handle_event("open_issue_shares_modal", _params, socket) do
+    {:noreply, assign(socket, :show_issue_shares_modal, true)}
+  end
+
+  def handle_event("close_issue_shares_modal", _params, socket) do
+    {:noreply,
+     socket
+     |> assign(:show_issue_shares_modal, false)
+     |> assign(:issue_shares_form, to_form(%{}))}
+  end
+
+  def handle_event("validate_stakeholder", %{"stakeholder" => params}, socket) do
+    {:noreply, assign(socket, :stakeholder_form, to_form(params, as: :stakeholder))}
+  end
+
+  def handle_event("validate_issue_shares", %{"issue_shares" => params}, socket) do
+    {:noreply, assign(socket, :issue_shares_form, to_form(params, as: :issue_shares))}
+  end
+
   def handle_event("add_stakeholder", %{"stakeholder" => stakeholder_params}, socket) do
     case CapTable.create_stakeholder(stakeholder_params) do
       {:ok, _stakeholder} ->
-        {:noreply, put_flash(socket, :info, "Stakeholder added successfully")}
+        {:noreply,
+         socket
+         |> assign(:show_stakeholder_modal, false)
+         |> assign(:stakeholder_form, to_form(%{}))
+         |> put_flash(:info, "Stakeholder added successfully")}
 
-      {:error, _changeset} ->
-        {:noreply, put_flash(socket, :error, "Failed to add stakeholder")}
+      {:error, changeset} ->
+        {:noreply,
+         socket
+         |> assign(:stakeholder_form, to_form(changeset))
+         |> put_flash(:error, "Failed to add stakeholder")}
     end
   end
 
-  def handle_event("add_stock_class", %{"stock_class" => stock_class_params}, socket) do
-    case CapTable.create_stock_class(stock_class_params) do
-      {:ok, _stock_class} ->
-        {:noreply, put_flash(socket, :info, "Stock class created successfully")}
+  def handle_event("issue_shares", %{"issue_shares" => params}, socket) do
+    security_params = %{
+      stakeholder_id: params["stakeholder_id"],
+      stock_class_id: params["stock_class_id"],
+      shares: params["shares"],
+      issue_date: params["issue_date"] || Date.utc_today(),
+      certificate_id: params["certificate_id"]
+    }
 
-      {:error, _changeset} ->
-        {:noreply, put_flash(socket, :error, "Failed to create stock class")}
-    end
-  end
+    transaction_params = %{
+      transaction_type: "issuance",
+      transaction_date: params["issue_date"] || Date.utc_today(),
+      quantity: params["shares"],
+      price_per_share: params["price_per_share"],
+      stakeholder_id: params["stakeholder_id"]
+    }
 
-  def handle_event("issue_shares", %{"security" => security_params}, socket) do
-    case CapTable.issue_security(security_params) do
-      {:ok, _security} ->
-        {:noreply, put_flash(socket, :info, "Shares issued successfully")}
-
-      {:error, _changeset} ->
-        {:noreply, put_flash(socket, :error, "Failed to issue shares")}
+    with {:ok, security} <- CapTable.issue_security(security_params),
+         {:ok, _transaction} <-
+           CapTable.create_transaction(Map.put(transaction_params, :security_id, security.id)) do
+      {:noreply,
+       socket
+       |> assign(:show_issue_shares_modal, false)
+       |> assign(:issue_shares_form, to_form(%{}))
+       |> put_flash(:info, "Shares issued successfully")}
+    else
+      {:error, changeset} ->
+        {:noreply,
+         socket
+         |> assign(:issue_shares_form, to_form(changeset))
+         |> put_flash(:error, "Failed to issue shares")}
     end
   end
 
@@ -126,10 +181,16 @@ defmodule CapTableWeb.CapTableLive do
               <p class="mt-1 text-slate-400">Manage your company's equity ownership</p>
             </div>
             <div class="flex space-x-3">
-              <button class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-700">
-                Export OCF
+              <button
+                phx-click="open_stakeholder_modal"
+                class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-700"
+              >
+                Add Stakeholder
               </button>
-              <button class="rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:shadow-cyan-500/40">
+              <button
+                phx-click="open_issue_shares_modal"
+                class="rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:shadow-cyan-500/40"
+              >
                 Issue Shares
               </button>
             </div>
@@ -257,6 +318,220 @@ defmodule CapTableWeb.CapTableLive do
           </div>
         </div>
       </div>
+      
+    <!-- Add Stakeholder Modal -->
+      <%= if @show_stakeholder_modal do %>
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div class="w-full max-w-md rounded-xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
+            <div class="mb-6 flex items-center justify-between">
+              <h3 class="text-xl font-bold text-white">Add Stakeholder</h3>
+              <button
+                phx-click="close_stakeholder_modal"
+                class="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+              >
+                <.icon name="hero-x-mark" class="h-5 w-5" />
+              </button>
+            </div>
+
+            <.form
+              for={@stakeholder_form}
+              id="stakeholder-form"
+              phx-change="validate_stakeholder"
+              phx-submit="add_stakeholder"
+            >
+              <div class="space-y-4">
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-slate-300">Name</label>
+                  <input
+                    type="text"
+                    name="stakeholder[name]"
+                    value={@stakeholder_form[:name].value}
+                    required
+                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                    placeholder="Enter stakeholder name"
+                  />
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-slate-300">Type</label>
+                  <select
+                    name="stakeholder[stakeholder_type]"
+                    required
+                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                  >
+                    <option value="">Select type</option>
+                    <option value="individual">Individual</option>
+                    <option value="institution">Institution</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-slate-300">Email</label>
+                  <input
+                    type="email"
+                    name="stakeholder[email]"
+                    value={@stakeholder_form[:email].value}
+                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                    placeholder="email@example.com"
+                  />
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-slate-300">Tax ID</label>
+                  <input
+                    type="text"
+                    name="stakeholder[tax_id]"
+                    value={@stakeholder_form[:tax_id].value}
+                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                    placeholder="123-45-6789"
+                  />
+                </div>
+              </div>
+
+              <div class="mt-6 flex justify-end space-x-3">
+                <button
+                  type="button"
+                  phx-click="close_stakeholder_modal"
+                  class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:shadow-cyan-500/40"
+                >
+                  Add Stakeholder
+                </button>
+              </div>
+            </.form>
+          </div>
+        </div>
+      <% end %>
+      
+    <!-- Issue Shares Modal -->
+      <%= if @show_issue_shares_modal do %>
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div class="w-full max-w-md rounded-xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
+            <div class="mb-6 flex items-center justify-between">
+              <h3 class="text-xl font-bold text-white">Issue Shares</h3>
+              <button
+                phx-click="close_issue_shares_modal"
+                class="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+              >
+                <.icon name="hero-x-mark" class="h-5 w-5" />
+              </button>
+            </div>
+
+            <.form
+              for={@issue_shares_form}
+              id="issue-shares-form"
+              phx-change="validate_issue_shares"
+              phx-submit="issue_shares"
+            >
+              <div class="space-y-4">
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-slate-300">Stakeholder</label>
+                  <select
+                    name="issue_shares[stakeholder_id]"
+                    required
+                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                  >
+                    <option value="">Select stakeholder</option>
+                    <%= for stakeholder <- @stakeholders do %>
+                      <option value={stakeholder.id}>{stakeholder.name}</option>
+                    <% end %>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-slate-300">Stock Class</label>
+                  <select
+                    name="issue_shares[stock_class_id]"
+                    required
+                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                  >
+                    <option value="">Select stock class</option>
+                    <%= for stock_class <- @stock_classes do %>
+                      <option value={stock_class.id}>{stock_class.name}</option>
+                    <% end %>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-slate-300">
+                    Number of Shares
+                  </label>
+                  <input
+                    type="number"
+                    name="issue_shares[shares]"
+                    value={@issue_shares_form[:shares].value}
+                    required
+                    min="1"
+                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                    placeholder="1000000"
+                  />
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-slate-300">
+                    Price Per Share
+                  </label>
+                  <input
+                    type="number"
+                    name="issue_shares[price_per_share]"
+                    value={@issue_shares_form[:price_per_share].value}
+                    required
+                    min="0"
+                    step="0.01"
+                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                    placeholder="0.01"
+                  />
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-slate-300">Issue Date</label>
+                  <input
+                    type="date"
+                    name="issue_shares[issue_date]"
+                    value={@issue_shares_form[:issue_date].value || Date.utc_today()}
+                    required
+                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                  />
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-slate-300">
+                    Certificate ID
+                  </label>
+                  <input
+                    type="text"
+                    name="issue_shares[certificate_id]"
+                    value={@issue_shares_form[:certificate_id].value}
+                    class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                    placeholder="CS-001"
+                  />
+                </div>
+              </div>
+
+              <div class="mt-6 flex justify-end space-x-3">
+                <button
+                  type="button"
+                  phx-click="close_issue_shares_modal"
+                  class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:shadow-cyan-500/40"
+                >
+                  Issue Shares
+                </button>
+              </div>
+            </.form>
+          </div>
+        </div>
+      <% end %>
     </Layouts.app>
     """
   end
