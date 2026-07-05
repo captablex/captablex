@@ -17,7 +17,7 @@ defmodule CapTableWeb.Router do
   scope "/", CapTableWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", CapTableLive
   end
 
   # Other scopes may use custom stacks.
