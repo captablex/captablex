@@ -21,7 +21,6 @@ defmodule CapTableWeb.CapTableLive do
     else
       {:ok, socket}
     end
-    end
   end
 
   defp format_number(number) when is_integer(number) do
