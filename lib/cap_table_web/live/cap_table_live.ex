@@ -6,32 +6,31 @@ defmodule CapTableWeb.CapTableLive do
   def mount(_params, _session, socket) do
     if connected?(socket) do
       Phoenix.PubSub.subscribe(CapTable.PubSub, "cap_table:updates")
+
+      socket =
+        socket
+        |> assign(:stakeholders, CapTable.list_stakeholders())
+        |> assign(:stock_classes, CapTable.list_stock_classes())
+        |> assign(:securities, CapTable.list_securities())
+        |> assign(:ownership_breakdown, CapTable.calculate_ownership_breakdown())
+        |> assign(:total_shares_outstanding, CapTable.get_total_shares_outstanding())
+        |> assign(:total_shares_authorized, CapTable.get_total_shares_authorized())
+        |> stream(:transactions, CapTable.list_transactions())
+
+      {:ok, socket}
     end
 
-    socket =
-      socket
-      |> assign(:stakeholders, CapTable.list_stakeholders())
-      |> assign(:stock_classes, CapTable.list_stock_classes())
-      |> assign(:securities, CapTable.list_securities())
-      |> assign(:ownership_breakdown, CapTable.calculate_ownership_breakdown())
-      |> assign(:total_shares_outstanding, CapTable.get_total_shares_outstanding())
-      |> assign(:total_shares_authorized, CapTable.get_total_shares_authorized())
-      |> stream(:transactions, CapTable.list_transactions())
+    defp format_number(number) when is_integer(number) do
+      number
+      |> Integer.to_string()
+      |> String.to_charlist()
+      |> Enum.reverse()
+      |> Enum.chunk_every(3)
+      |> Enum.join(",")
+      |> String.reverse()
+    end
 
-    {:ok, socket}
-  end
-
-  defp format_number(number) when is_integer(number) do
-    number
-    |> Integer.to_string()
-    |> String.to_charlist()
-    |> Enum.reverse()
-    |> Enum.chunk_every(3)
-    |> Enum.join(",")
-    |> String.reverse()
-  end
-
-  defp format_number(number), do: to_string(number)
+    defp format_number(number), do: to_string(number)
   end
 
   def handle_info({:stakeholder_created, _stakeholder}, socket) do
@@ -194,4 +193,3 @@ defmodule CapTableWeb.CapTableLive do
     """
   end
 end
-
