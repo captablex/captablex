@@ -192,7 +192,7 @@ defmodule CapTable do
         security = Repo.preload(security, [:stakeholder, :stock_class])
 
         # Create a transaction record for the issuance
-        {:ok, transaction} =
+        {:ok, _transaction} =
           create_transaction(%{
             stakeholder_id: security.stakeholder_id,
             security_id: security.id,
