@@ -1,9 +1,9 @@
-defmodule CapTable.Factory do
+defmodule Captablex.Factory do
   @moduledoc """
   Factory functions for generating test data.
   """
 
-  alias CapTable.{Stakeholder, StockClass, SecurityIssuance, Transaction, Repo}
+  alias Captablex.{Stakeholder, StockClass, SecurityIssuance, Transaction, Repo}
 
   def insert(factory_name, attrs \\ %{}) do
     factory_name

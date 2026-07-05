@@ -24,7 +24,7 @@ defmodule CaptablexWeb.Endpoint do
     at: "/",
     from: :captablex,
     gzip: not code_reloading?,
-    only: CapTableWeb.static_paths()
+    only: CaptablexWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

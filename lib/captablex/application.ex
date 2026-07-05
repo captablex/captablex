@@ -1,4 +1,4 @@
-defmodule CapTable.Application do
+defmodule Captablex.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -8,21 +8,21 @@ defmodule CapTable.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      CapTableWeb.Telemetry,
-      CapTable.Repo,
+      CaptablexWeb.Telemetry,
+      Captablex.Repo,
       {Ecto.Migrator,
-       repos: Application.fetch_env!(:cap_table, :ecto_repos), skip: skip_migrations?()},
-      {DNSCluster, query: Application.get_env(:cap_table, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: CapTable.PubSub},
-      # Start a worker by calling: CapTable.Worker.start_link(arg)
-      # {CapTable.Worker, arg},
+       repos: Application.fetch_env!(:captablex, :ecto_repos), skip: skip_migrations?()},
+      {DNSCluster, query: Application.get_env(:captablex, :dns_cluster_query) || :ignore},
+      {Phoenix.PubSub, name: Captablex.PubSub},
+      # Start a worker by calling: Captablex.Worker.start_link(arg)
+      # {Captablex.Worker, arg},
       # Start to serve requests, typically the last entry
-      CapTableWeb.Endpoint
+      CaptablexWeb.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: CapTable.Supervisor]
+    opts = [strategy: :one_for_one, name: Captablex.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
@@ -30,7 +30,7 @@ defmodule CapTable.Application do
   # whenever the application is updated.
   @impl true
   def config_change(changed, _new, removed) do
-    CapTableWeb.Endpoint.config_change(changed, removed)
+    CaptablexWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 

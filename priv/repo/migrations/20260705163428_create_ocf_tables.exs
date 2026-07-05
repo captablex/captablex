@@ -1,4 +1,4 @@
-defmodule CapTable.Repo.Migrations.CreateOcfTables do
+defmodule Captablex.Repo.Migrations.CreateOcfTables do
   use Ecto.Migration
 
   def change do

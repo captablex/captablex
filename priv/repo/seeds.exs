@@ -5,22 +5,22 @@
 # Inside the script, you can read and write to any of your
 # repositories directly:
 #
-#     CapTable.Repo.insert!(%CapTable.SomeSchema{})
+#     Captablex.Repo.insert!(%Captablex.SomeSchema{})
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias CapTable.Repo
+alias Captablex.Repo
 
 # Clear existing data
-Repo.delete_all(CapTable.Transaction)
-Repo.delete_all(CapTable.SecurityIssuance)
-Repo.delete_all(CapTable.StockClass)
-Repo.delete_all(CapTable.Stakeholder)
+Repo.delete_all(Captablex.Transaction)
+Repo.delete_all(Captablex.SecurityIssuance)
+Repo.delete_all(Captablex.StockClass)
+Repo.delete_all(Captablex.Stakeholder)
 
 # Create stakeholders
 {:ok, jane} =
-  CapTable.create_stakeholder(%{
+  Captablex.create_stakeholder(%{
     name: "Jane Doe",
     stakeholder_type: "individual",
     email: "jane@example.com",
@@ -28,7 +28,7 @@ Repo.delete_all(CapTable.Stakeholder)
   })
 
 {:ok, john} =
-  CapTable.create_stakeholder(%{
+  Captablex.create_stakeholder(%{
     name: "John Smith",
     stakeholder_type: "individual",
     email: "john@example.com",
@@ -36,7 +36,7 @@ Repo.delete_all(CapTable.Stakeholder)
   })
 
 {:ok, acme_ventures} =
-  CapTable.create_stakeholder(%{
+  Captablex.create_stakeholder(%{
     name: "Acme Ventures",
     stakeholder_type: "institution",
     email: "invest@acmeventures.com",
@@ -45,7 +45,7 @@ Repo.delete_all(CapTable.Stakeholder)
 
 # Create stock classes
 {:ok, common} =
-  CapTable.create_stock_class(%{
+  Captablex.create_stock_class(%{
     class_type: "common",
     name: "Common Stock",
     shares_authorized: 10_000_000,
@@ -54,7 +54,7 @@ Repo.delete_all(CapTable.Stakeholder)
   })
 
 {:ok, preferred_a} =
-  CapTable.create_stock_class(%{
+  Captablex.create_stock_class(%{
     class_type: "preferred",
     name: "Series A Preferred Stock",
     shares_authorized: 2_000_000,
@@ -64,7 +64,7 @@ Repo.delete_all(CapTable.Stakeholder)
 
 # Issue securities
 {:ok, jane_security} =
-  CapTable.issue_security(%{
+  Captablex.issue_security(%{
     stakeholder_id: jane.id,
     stock_class_id: common.id,
     shares: 4_000_000,
@@ -73,7 +73,7 @@ Repo.delete_all(CapTable.Stakeholder)
   })
 
 {:ok, john_security} =
-  CapTable.issue_security(%{
+  Captablex.issue_security(%{
     stakeholder_id: john.id,
     stock_class_id: common.id,
     shares: 2_500_000,
@@ -82,7 +82,7 @@ Repo.delete_all(CapTable.Stakeholder)
   })
 
 {:ok, acme_security} =
-  CapTable.issue_security(%{
+  Captablex.issue_security(%{
     stakeholder_id: acme_ventures.id,
     stock_class_id: preferred_a.id,
     shares: 1_000_000,
@@ -91,7 +91,7 @@ Repo.delete_all(CapTable.Stakeholder)
   })
 
 # Create transactions
-CapTable.create_transaction(%{
+Captablex.create_transaction(%{
   transaction_type: "issuance",
   transaction_date: ~D[2024-01-15],
   quantity: 4_000_000,
@@ -100,7 +100,7 @@ CapTable.create_transaction(%{
   security_id: jane_security.id
 })
 
-CapTable.create_transaction(%{
+Captablex.create_transaction(%{
   transaction_type: "issuance",
   transaction_date: ~D[2024-01-15],
   quantity: 2_500_000,
@@ -109,7 +109,7 @@ CapTable.create_transaction(%{
   security_id: john_security.id
 })
 
-CapTable.create_transaction(%{
+Captablex.create_transaction(%{
   transaction_type: "issuance",
   transaction_date: ~D[2024-03-01],
   quantity: 1_000_000,

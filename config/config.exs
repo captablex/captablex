@@ -7,19 +7,19 @@
 # General application configuration
 import Config
 
-config :cap_table,
+config :captablex,
   ecto_repos: [Captablex.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
-config :cap_table, CapTableWeb.Endpoint,
+config :captablex, CaptablexWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [html: CapTableWeb.ErrorHTML, json: CapTableWeb.ErrorJSON],
+    formats: [html: CaptablexWeb.ErrorHTML, json: CaptablexWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: CapTable.PubSub,
+  pubsub_server: Captablex.PubSub,
   live_view: [signing_salt: "8FKeqOz4"]
 
 # Configures the mailer
@@ -29,12 +29,12 @@ config :cap_table, CapTableWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :cap_table, CapTable.Mailer, adapter: Swoosh.Adapters.Local
+config :captablex, Captablex.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.25.4",
-  cap_table: [
+  captablex: [
     args:
       ~w(js/app.js --bundle --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
     cd: Path.expand("../assets", __DIR__),
@@ -44,7 +44,7 @@ config :esbuild,
 # Configure tailwind (the version is required)
 config :tailwind,
   version: "4.1.7",
-  cap_table: [
+  captablex: [
     args: ~w(
       --input=assets/css/app.css
       --output=priv/static/assets/css/app.css

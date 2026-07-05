@@ -1,4 +1,4 @@
-defmodule CapTableWeb.CoreComponents do
+defmodule CaptablexWeb.CoreComponents do
   @moduledoc """
   Provides core UI components.
 
@@ -449,9 +449,9 @@ defmodule CapTableWeb.CoreComponents do
     # uncommenting and adjusting the following code:
 
     # if count = opts[:count] do
-    #   Gettext.dngettext(CapTableWeb.Gettext, "errors", msg, msg, count, opts)
+    #   Gettext.dngettext(CaptablexWeb.Gettext, "errors", msg, msg, count, opts)
     # else
-    #   Gettext.dgettext(CapTableWeb.Gettext, "errors", msg, opts)
+    #   Gettext.dgettext(CaptablexWeb.Gettext, "errors", msg, opts)
     # end
 
     Enum.reduce(opts, msg, fn {key, value}, acc ->

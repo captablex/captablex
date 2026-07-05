@@ -5,20 +5,20 @@ import Config
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
-config :cap_table, CapTable.Repo,
-  database: Path.expand("../cap_table_test.db", __DIR__),
+config :captablex, Captablex.Repo,
+  database: Path.expand("../captablex_test.db", __DIR__),
   pool_size: 5,
   pool: Ecto.Adapters.SQL.Sandbox
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
-config :cap_table, CapTableWeb.Endpoint,
+config :captablex, CaptablexWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "ZwXIkVOFUPBSojg8gb6ldwCz+Qh8mZFdBlUNCArW/NBPozdwpDhnuCB95EneBZNh",
   server: false
 
 # In test we don't send emails
-config :cap_table, CapTable.Mailer, adapter: Swoosh.Adapters.Test
+config :captablex, Captablex.Mailer, adapter: Swoosh.Adapters.Test
 
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false

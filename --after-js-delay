@@ -1,0 +1,126 @@
+==========================
+http://localhost:4000/
+==========================
+
+Cap Table Dashboard
+===================
+
+Manage your company's equity ownership
+
+Add Stakeholder Issue Shares
+
+Total Authorized
+
+12,000,000
+
+Outstanding
+
+7,500,000
+
+Stakeholders
+
+3
+
+Stock Classes
+
+2
+
+Ownership Breakdown
+- ------------------
+
+Stakeholder
+
+Shares
+
+Ownership %
+
+J
+
+Jane Doe
+
+Individual
+
+4,000,000
+
+53.33%
+
+J
+
+John Smith
+
+Individual
+
+2,500,000
+
+33.33%
+
+A
+
+Acme Ventures
+
+Institution
+
+1,000,000
+
+13.33%
+
+Recent Activity
+- --------------
+
+View All
+
+Issuance
+
+Acme Ventures
+
+1,000,000 shares
+
+Mar 01, 2024
+
+Issuance
+
+John Smith
+
+2,500,000 shares
+
+Jan 15, 2024
+
+Issuance
+
+Jane Doe
+
+4,000,000 shares
+
+Jan 15, 2024
+
+# ## Add Stakeholder
+
+Name 
+
+Type Select type Individual Institution
+
+Email 
+
+Tax ID 
+
+Cancel Add Stakeholder
+
+Close
+
+# ## Issue Shares
+
+Stakeholder Select stakeholder Jane Doe John Smith Acme Ventures
+
+Stock Class Select stock class Common Stock Series A Preferred Stock
+
+Number of Shares 
+
+Price Per Share 
+
+Issue Date 
+
+Certificate ID 
+
+Cancel Issue Shares
+
+Close

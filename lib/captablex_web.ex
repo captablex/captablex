@@ -1,12 +1,12 @@
-defmodule CapTableWeb do
+defmodule CaptablexWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, components, channels, and so on.
 
   This can be used in your application as:
 
-      use CapTableWeb, :controller
-      use CapTableWeb, :html
+      use CaptablexWeb, :controller
+      use CaptablexWeb, :html
 
   The definitions below will be executed for every controller,
   component, etc, so keep them short and clean, focused
@@ -80,11 +80,11 @@ defmodule CapTableWeb do
       # HTML escaping functionality
       import Phoenix.HTML
       # Core UI components
-      import CapTableWeb.CoreComponents
+      import CaptablexWeb.CoreComponents
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS
-      alias CapTableWeb.Layouts
+      alias CaptablexWeb.Layouts
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())
@@ -94,9 +94,9 @@ defmodule CapTableWeb do
   def verified_routes do
     quote do
       use Phoenix.VerifiedRoutes,
-        endpoint: CapTableWeb.Endpoint,
-        router: CapTableWeb.Router,
-        statics: CapTableWeb.static_paths()
+        endpoint: CaptablexWeb.Endpoint,
+        router: CaptablexWeb.Router,
+        statics: CaptablexWeb.static_paths()
     end
   end
 

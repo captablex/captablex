@@ -1,4 +1,4 @@
-defmodule CapTableWeb.Telemetry do
+defmodule CaptablexWeb.Telemetry do
   use Supervisor
   import Telemetry.Metrics
 
@@ -53,23 +53,23 @@ defmodule CapTableWeb.Telemetry do
       ),
 
       # Database Metrics
-      summary("cap_table.repo.query.total_time",
+      summary("captablex.repo.query.total_time",
         unit: {:native, :millisecond},
         description: "The sum of the other measurements"
       ),
-      summary("cap_table.repo.query.decode_time",
+      summary("captablex.repo.query.decode_time",
         unit: {:native, :millisecond},
         description: "The time spent decoding the data received from the database"
       ),
-      summary("cap_table.repo.query.query_time",
+      summary("captablex.repo.query.query_time",
         unit: {:native, :millisecond},
         description: "The time spent executing the query"
       ),
-      summary("cap_table.repo.query.queue_time",
+      summary("captablex.repo.query.queue_time",
         unit: {:native, :millisecond},
         description: "The time spent waiting for a database connection"
       ),
-      summary("cap_table.repo.query.idle_time",
+      summary("captablex.repo.query.idle_time",
         unit: {:native, :millisecond},
         description:
           "The time the connection spent waiting before being checked out for the query"
@@ -87,7 +87,7 @@ defmodule CapTableWeb.Telemetry do
     [
       # A module, function and arguments to be invoked periodically.
       # This function must call :telemetry.execute/3 and a metric must be added above.
-      # {CapTableWeb, :count_users, []}
+      # {CaptablexWeb, :count_users, []}
     ]
   end
 end
