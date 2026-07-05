@@ -3,7 +3,7 @@ defmodule CapTable.MixProject do
 
   def project do
     [
-      app: :cap_table,
+      app: :captablex,
       version: "0.1.0",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -20,7 +20,7 @@ defmodule CapTable.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {CapTable.Application, []},
+      mod: {Captablex.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
