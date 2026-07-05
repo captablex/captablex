@@ -4,20 +4,19 @@ defmodule CapTableWeb.CapTableLive do
   alias CapTable
 
   def mount(_params, _session, socket) do
+    socket =
+      socket
+      |> assign(:stakeholders, CapTable.list_stakeholders())
+      |> assign(:stock_classes, CapTable.list_stock_classes())
+      |> assign(:securities, CapTable.list_securities())
+      |> assign(:ownership_breakdown, CapTable.calculate_ownership_breakdown())
+      |> assign(:total_shares_outstanding, CapTable.get_total_shares_outstanding())
+      |> assign(:total_shares_authorized, CapTable.get_total_shares_authorized())
+
     if connected?(socket) do
       Phoenix.PubSub.subscribe(CapTable.PubSub, "cap_table:updates")
 
-      socket =
-        socket
-        |> assign(:stakeholders, CapTable.list_stakeholders())
-        |> assign(:stock_classes, CapTable.list_stock_classes())
-        |> assign(:securities, CapTable.list_securities())
-        |> assign(:ownership_breakdown, CapTable.calculate_ownership_breakdown())
-        |> assign(:total_shares_outstanding, CapTable.get_total_shares_outstanding())
-        |> assign(:total_shares_authorized, CapTable.get_total_shares_authorized())
-        |> stream(:transactions, CapTable.list_transactions())
-
-      {:ok, socket}
+      {:ok, stream(socket, :transactions, CapTable.list_transactions())}
     else
       {:ok, socket}
     end
