@@ -27,7 +27,7 @@ defmodule Captablex.CapTable.StockClass do
   Returns the display name for a stock class.
   Format: "Security Type - Series"
   """
-  def display_name(%__MODULE__{security_type: security_type, series: series}) do
+  def display_name(stock_class) do
     "#{stock_class.security_type} - #{stock_class.series}"
   end
 end
