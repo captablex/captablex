@@ -49,7 +49,7 @@ defmodule Captablex do
 
       timestamps()
 
-      def display_name(%__MODULE__{} = stock_class) do
+      def display_name(%Captablex.StockClass{} = stock_class) do
         "#{stock_class.security_type} - #{stock_class.series}"
       end
     end
