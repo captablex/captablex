@@ -6,78 +6,53 @@ Design: Sleek & modern fintech aesthetic with clean data visualizations.
 
 ## Progress Tracker
 
-- [x] Generate Phoenix LiveView project `cap_table`
+- [x] Generate Phoenix LiveView project `captablex`
 - [x] Create detailed plan.md with OCF spec requirements
-- [ ] Start the server to follow along
-- [ ] Replace default home page with static fintech design mockup
-- [ ] Implement core OCF Ecto schemas and migrations:
-  - Stakeholder schema (id, name, type, contact_info, tax_id)
-  - StockClass schema (id, class_type, name, shares_authorized, par_value, price_per_share)
-  - SecurityIssuance schema (id, stakeholder_id, stock_class_id, shares, issue_date, certificate_id)
-  - Transaction schema (id, type, date, stakeholder_id, security_id, quantity, price)
-- [ ] Create single migration file for all OCF tables
-- [ ] Implement CapTable context module:
-  - list_stakeholders/0
-  - create_stakeholder/1
-  - list_stock_classes/0
-  - create_stock_class/1
-  - list_securities/0
-  - issue_security/1
-  - calculate_ownership_breakdown/0 - returns %{stakeholder_id => {shares, percentage}}
-  - list_transactions/0
-  - create_transaction/1
-- [ ] Create CapTableLive dashboard at lib/cap_table_web/live/cap_table_live.ex:
-  - Mount: load stakeholders, stock classes, securities, ownership breakdown
-  - Real-time updates via PubSub when cap table changes
-  - Handle events:
-    - "issue_shares" - create new security issuance
-    - "add_stakeholder" - create new stakeholder
-    - "add_stock_class" - create new stock class
-  - Display current cap table with ownership percentages
-  - Show total shares outstanding
-  - Interactive ownership visualization (we'll use canvas for pie chart)
-- [ ] Create cap_table_live.html.heex template:
-  - Wrap content in <Layouts.app flash={@flash}>
-  - Header with company overview stats
-  - Stakeholders table with ownership breakdown
-  - Stock classes summary
-  - Recent transactions feed
-  - Forms for adding stakeholders, stock classes, issuing securities
-  - Canvas-based ownership pie chart with JS hook
-- [ ] Create app.js hook for ownership chart visualization
-  - mounted() - draw pie chart based on ownership data
-  - updated() - redraw when data changes
-- [ ] Update assets/css/app.css with sleek fintech theme:
-  - Professional dark theme with accent colors
-  - Data-focused color palette (blues, teals, grays)
-  - Custom daisyUI theme config
-- [ ] Update root.html.heex layout:
-  - Force theme to "dark" for fintech aesthetic
-  - Professional favicon/branding
-- [ ] Update <Layouts.app> in layouts.ex:
-  - Remove default Phoenix header
-  - Add professional nav with company branding
-  - Financial dashboard styling
-- [ ] Seed database with sample cap table data in priv/repo/seeds.exs:
-  - Founder stakeholders
-  - Common and Preferred stock classes
-  - Initial issuances
-  - Sample transactions
-- [ ] Update router.ex:
-  - Remove placeholder `get "/"` route
-  - Add `live "/"` pointing to CapTableLive dashboard
-- [ ] Visit running app to verify functionality
-- [ ] Reserve 2 steps for debugging
+- [x] Start the server to follow along
+- [x] Replace default home page with static fintech design mockup
+- [x] Implement core OCF Ecto schemas and migrations
+- [x] Create single migration file for all OCF tables
+- [x] Implement CapTable context module
+- [x] Create CaptablexLive dashboard
+- [x] Create captablex_live.html.heex template
+- [x] Create app.js hook for ownership chart visualization
+- [x] Update assets/css/app.css with sleek fintech theme
+- [x] Update root.html.heex layout
+- [x] Update <Layouts.app> in layouts.ex
+- [x] Seed database with sample cap table data
+- [x] Update router.ex
+- [x] Migrate to PostgreSQL from SQLite
+- [x] Add Settings Page with 5-tab interface
+- [x] Add dynamic stock class configuration
+- [x] Add liquidation preference fields to stock classes
+- [x] Create Waterfall context for liquidation calculations
+- [x] Create WaterfallLive UI for exit scenario modeling
+- [x] Add waterfall route and navigation
 
-## OCF Core Entities
-Based on Open Cap Format specification:
-- **Stakeholders**: Individuals/entities holding securities
-- **Stock Classes**: Common, Preferred, etc with terms
-- **Securities**: Actual share issuances to stakeholders
-- **Transactions**: Stock grants, transfers, exercises, conversions
+## New Waterfall Feature (In Progress)
+
+### Completed:
+- [x] Added liquidation preference fields to stock_classes table:
+  - liquidation_preference_multiple (e.g., 1.0 for 1x, 2.0 for 2x)
+  - participation_type ("participating" or "non-participating")
+  - seniority_rank (higher rank = paid first in waterfall)
+- [x] Updated StockClass schema with new fields
+- [x] Updated Settings UI to configure liquidation preferences
+- [x] Created Waterfall context module with calculation engine
+- [x] Created WaterfallLive UI at /waterfall
+- [x] Added waterfall route and navigation links
+
+### Remaining:
+- [ ] Test waterfall calculations with sample data
+- [ ] Add PDF export functionality for waterfall reports
+- [ ] Update README with waterfall documentation
 
 ## Technical Notes
-- Use LiveView streams for transactions list (append mode)
-- PubSub topic: "cap_table:updates" for real-time collaboration
-- Calculate ownership on-the-fly from securities table
-- Export to OCF JSON format (future enhancement)
+- PostgreSQL database on localhost:5432
+- Liquidation waterfall follows seniority-based distribution:
+  1. Pay liquidation preferences by seniority rank (highest first)
+  2. If proceeds remain, participating preferred gets pro-rata share
+  3. Common stock gets remaining proceeds
+- Real-time updates via PubSub across all views
+- Number formatting with commas for better readability
+
