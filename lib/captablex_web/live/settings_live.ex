@@ -106,7 +106,6 @@ defmodule CaptablexWeb.SettingsLive do
   end
 
   @impl true
-  @impl true
   def handle_event("open_stock_class_modal", _params, socket) do
     changeset = CapTable.change_stock_class(%StockClass{})
 
@@ -257,7 +256,6 @@ defmodule CaptablexWeb.SettingsLive do
     {:noreply, load_all_data(socket)}
   end
 
-  @impl true
   @impl true
   def handle_info({:stock_class_created, _stock_class}, socket) do
     {:noreply, load_all_data(socket)}
