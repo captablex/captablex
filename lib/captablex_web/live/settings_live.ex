@@ -2,6 +2,8 @@ defmodule CaptablexWeb.SettingsLive do
   use CaptablexWeb, :live_view
 
   alias Captablex.Settings
+  alias Captablex.CapTable
+  alias Captablex.CapTable.StockClass
   alias Captablex.Settings.ConfigurationOption
   alias Captablex.Accounts
   alias Captablex.Accounts.Stakeholder
@@ -15,6 +17,8 @@ defmodule CaptablexWeb.SettingsLive do
     socket =
       socket
       |> assign(:active_tab, "security_types")
+      |> assign(:show_stock_class_modal, false)
+      |> assign(:editing_stock_class, nil)
       |> assign(:show_option_modal, false)
       |> assign(:show_stakeholder_modal, false)
       |> assign(:editing_option, nil)
@@ -26,7 +30,7 @@ defmodule CaptablexWeb.SettingsLive do
 
   @impl true
   def handle_params(params, _url, socket) do
-    tab = params["tab"] || "security_types"
+    tab = params["tab"] || "stock_classes"
     {:noreply, assign(socket, :active_tab, tab)}
   end
 
@@ -102,6 +106,72 @@ defmodule CaptablexWeb.SettingsLive do
   end
 
   @impl true
+  @impl true
+  def handle_event("open_stock_class_modal", _params, socket) do
+    changeset = CapTable.change_stock_class(%StockClass{})
+
+    {:noreply,
+     socket
+     |> assign(:show_stock_class_modal, true)
+     |> assign(:editing_stock_class, nil)
+     |> assign(:stock_class_form, to_form(changeset))}
+  end
+
+  @impl true
+  def handle_event("edit_stock_class", %{"id" => id}, socket) do
+    stock_class = CapTable.get_stock_class!(id)
+    changeset = CapTable.change_stock_class(stock_class)
+
+    {:noreply,
+     socket
+     |> assign(:show_stock_class_modal, true)
+     |> assign(:editing_stock_class, stock_class)
+     |> assign(:stock_class_form, to_form(changeset))}
+  end
+
+  @impl true
+  def handle_event("delete_stock_class", %{"id" => id}, socket) do
+    stock_class = CapTable.get_stock_class!(id)
+
+    case CapTable.delete_stock_class(stock_class) do
+      {:ok, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Stock class deleted successfully")
+         |> load_all_data()}
+
+      {:error, _} ->
+        {:noreply, put_flash(socket, :error, "Failed to delete stock class")}
+    end
+  end
+
+  @impl true
+  def handle_event("save_stock_class", %{"stock_class" => stock_class_params}, socket) do
+    save_stock_class_fn =
+      if socket.assigns.editing_stock_class do
+        &CapTable.update_stock_class(socket.assigns.editing_stock_class, &1)
+      else
+        &CapTable.create_stock_class(&1)
+      end
+
+    case save_stock_class_fn.(stock_class_params) do
+      {:ok, _stock_class} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Stock class saved successfully")
+         |> assign(:show_stock_class_modal, false)
+         |> load_all_data()}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign(socket, :stock_class_form, to_form(changeset))}
+    end
+  end
+
+  @impl true
+  def handle_event("close_stock_class_modal", _params, socket) do
+    {:noreply, assign(socket, :show_stock_class_modal, false)}
+  end
+
   def handle_event("open_stakeholder_modal", _params, socket) do
     changeset = Accounts.change_stakeholder(%Stakeholder{})
 
@@ -188,6 +258,21 @@ defmodule CaptablexWeb.SettingsLive do
   end
 
   @impl true
+  @impl true
+  def handle_info({:stock_class_created, _stock_class}, socket) do
+    {:noreply, load_all_data(socket)}
+  end
+
+  @impl true
+  def handle_info({:stock_class_updated, _stock_class}, socket) do
+    {:noreply, load_all_data(socket)}
+  end
+
+  @impl true
+  def handle_info({:stock_class_deleted, _stock_class}, socket) do
+    {:noreply, load_all_data(socket)}
+  end
+
   def handle_info({:stakeholder_created, _stakeholder}, socket) do
     {:noreply, load_all_data(socket)}
   end
@@ -210,6 +295,7 @@ defmodule CaptablexWeb.SettingsLive do
     |> assign(:stakeholder_types, Map.get(all_options, "stakeholder_type", []))
     |> assign(:series, Map.get(all_options, "series", []))
     |> assign(:stakeholders, Accounts.list_stakeholders())
+    |> assign(:stock_classes, CapTable.list_stock_classes())
   end
 
   defp tab_class(active_tab, tab) do
