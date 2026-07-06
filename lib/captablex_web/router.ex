@@ -19,6 +19,7 @@ defmodule CaptablexWeb.Router do
 
     live "/", CaptablexLive
     live "/settings", SettingsLive
+    live "/waterfall", WaterfallLive
   end
 
   # Other scopes may use custom stacks.
