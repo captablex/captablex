@@ -39,8 +39,8 @@ defmodule Captablex do
     import Ecto.Changeset
 
     schema "stock_classes" do
-      field :class_type, :string
-      field :name, :string
+      field :security_type, :string
+      field :series, :string
       field :shares_authorized, :integer
       field :par_value, :decimal
       field :price_per_share, :decimal
@@ -48,6 +48,10 @@ defmodule Captablex do
       has_many :securities, Captablex.SecurityIssuance
 
       timestamps()
+
+      def display_name(%__MODULE__{} = stock_class) do
+        "#{stock_class.security_type} - #{stock_class.series}"
+      end
     end
 
     def changeset(stock_class, attrs) do
