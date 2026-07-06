@@ -13,14 +13,61 @@ A modern cap table management system built with Phoenix LiveView for tracking eq
 - **Ownership Breakdown** - Real-time calculation of ownership percentages
 - **Transaction History** - Complete audit trail of all equity events
 - **OCF Export** - Export cap table data in Open Cap Table Format (OCF 1.0.0)
+- **Liquidation Waterfall Calculator** - Model exit scenarios and distribution outcomes
 
-### Settings Page (New!)
+### Settings Page
 Manage all configuration options in one place:
 - **Security Types** - Define security types (e.g., "Common Stock", "Preferred Stock")
 - **Stakeholder Types** - Configure stakeholder categories
 - **Series** - Manage series (e.g., "Seed", "Series A", "Series B")
 - **Stock Classes** - Create stock classes from Security Type + Series combinations
+  - Configure liquidation preferences (1x, 2x, etc.)
+  - Set participation type (participating vs. non-participating)
+  - Define seniority rank for waterfall ordering
 - **Stakeholders** - Full CRUD management for all stakeholders
+
+### Waterfall Calculator (NEW!)
+Model liquidation scenarios and see detailed distribution outcomes:
+- **Exit Scenario Modeling** - Input total exit value to see distribution
+- **Seniority-Based Distribution** - Higher seniority ranks paid first
+- **Liquidation Preferences** - Automatic calculation of preference payouts
+- **Participation Rights** - Participating preferred gets preference + pro-rata share
+- **Step-by-Step Breakdown** - Detailed waterfall calculation steps
+- **Stakeholder Summary** - See total distribution per stakeholder
+- **Visual Analytics** - Clear breakdown of distribution types
+
+#### How Liquidation Waterfall Works
+
+The waterfall follows standard venture capital distribution logic:
+
+1. **Liquidation Preferences (by Seniority)**
+   - Stock classes are processed in descending seniority rank order
+   - Higher seniority rank = paid first
+   - Each class receives: `shares × price_per_share × liquidation_preference_multiple`
+   - Example: 1,000,000 shares × $1.00 × 2.0x = $2,000,000 preference
+
+2. **Participation (if applicable)**
+   - After preferences are paid, participating preferred gets additional pro-rata share
+   - Non-participating preferred does NOT participate further
+   - Common stock always participates pro-rata in remaining proceeds
+
+3. **Distribution Types**
+   - **Non-Participating Preferred**: Gets preference OR pro-rata share (whichever is higher)
+   - **Participating Preferred**: Gets preference AND pro-rata share
+   - **Common Stock**: Gets pro-rata share of remaining proceeds
+
+**Example Scenario:**
+- Exit Value: $10,000,000
+- Series A Preferred: 2,000,000 shares, $1.00/share, 1.5x preference, participating, rank 2
+- Common Stock: 8,000,000 shares, $0.10/share, rank 0
+
+**Distribution:**
+1. Series A gets $3,000,000 liquidation preference (2M × $1 × 1.5x)
+2. $7,000,000 remains for participation
+3. Series A gets additional pro-rata share: $1,400,000 (2M / 10M × $7M)
+4. Common gets remaining: $5,600,000
+
+**Total:** Series A = $4,400,000 (44%), Common = $5,600,000 (56%)
 
 ### Real-time Features
 All changes broadcast instantly to connected users:
@@ -151,6 +198,9 @@ Each stock class has:
 - Shares Authorized
 - Par Value (optional)
 - Price Per Share (optional)
+- **Liquidation Preference Multiple** (e.g., 1.0 for 1x, 2.0 for 2x)
+- **Participation Type** (participating or non-participating)
+- **Seniority Rank** (0 = common, higher = more senior)
 
 #### Stakeholder Types
 Configure stakeholder categories:
@@ -183,7 +233,11 @@ Configure stakeholder categories:
 3. Click **"+ Add Stock Class"**
 4. Select Security Type and Series from dropdowns
 5. Enter shares authorized, par value, and price per share
-6. Click **"Save"**
+6. **Configure Liquidation Preferences:**
+   - **Liquidation Preference Multiple** - Enter 1.0 for 1x, 2.0 for 2x, etc.
+   - **Participation Type** - Select "Participating" or "Non-Participating"
+   - **Seniority Rank** - Enter rank (0 = common, 1+ = preferred, higher = more senior)
+7. Click **"Save"**
 
 Stock classes will be displayed as: "Security Type - Series" (e.g., "Preferred Stock - Series A")
 
@@ -204,6 +258,23 @@ The system automatically:
 - Records a transaction
 - Updates ownership percentages
 - Broadcasts changes to all connected users
+
+### Running Waterfall Scenarios
+
+1. Visit [http://localhost:4000/waterfall](http://localhost:4000/waterfall)
+2. Enter the **Total Exit Value** (e.g., 10000000 for $10M exit)
+3. Click **"Calculate"**
+4. View results:
+   - **Summary Cards** - Total exit value, total distributed, remaining proceeds
+   - **Distribution Table** - Amount each stakeholder receives
+   - **Detailed Breakdown** - Click "Show Breakdown" to see distribution types
+   - **Waterfall Steps** - Step-by-step calculation logic
+
+The calculator shows:
+- How much each stakeholder receives
+- What percentage of exit value they get
+- Breakdown by distribution type (liquidation preference, participation, etc.)
+- Seniority-based waterfall flow
 
 ### Exporting to OCF Format
 
@@ -246,6 +317,7 @@ captablex/
 │   │   ├── accounts/   # Stakeholder management
 │   │   ├── cap_table/  # Stock class management
 │   │   ├── settings/   # Configuration options
+│   │   ├── waterfall/  # Liquidation waterfall calculations
 │   │   ├── application.ex
 │   │   ├── repo.ex
 │   │   └── mailer.ex
@@ -255,7 +327,8 @@ captablex/
 │       ├── controllers/
 │       ├── live/       # LiveView modules
 │       │   ├── captablex_live.ex    # Dashboard
-│       │   └── settings_live.ex     # Settings page
+│       │   ├── settings_live.ex     # Settings page
+│       │   └── waterfall_live.ex    # Waterfall calculator
 │       ├── endpoint.ex
 │       ├── router.ex
 │       └── telemetry.ex
@@ -287,6 +360,9 @@ captablex/
 - `shares_authorized` - Total authorized shares
 - `par_value` - Par value per share (optional)
 - `price_per_share` - Current price (optional)
+- `liquidation_preference_multiple` - Liquidation preference multiplier (e.g., 1.0, 2.0)
+- `participation_type` - "participating" or "non-participating"
+- `seniority_rank` - Waterfall priority (higher = paid first)
 - **Unique constraint**: `[:security_type, :series]`
 
 ### Configuration Options
@@ -379,7 +455,14 @@ The app is configured to work seamlessly with Fly.io deployment, including Postg
 
 ## 🆕 Recent Changes
 
-### Version 0.2.0 (Latest)
+### Version 0.3.0 (Latest)
+- ✅ **Added Liquidation Waterfall Calculator** - Model exit scenarios with detailed distribution breakdown
+- ✅ **Liquidation Preferences** - Configure preference multiples, participation rights, and seniority
+- ✅ **Waterfall UI** - Interactive calculator at /waterfall with step-by-step breakdown
+- ✅ **Seniority-Based Distribution** - Automatic calculation following standard VC waterfall logic
+- ✅ **Visual Analytics** - Clear breakdown of distribution types and stakeholder payouts
+
+### Version 0.2.0
 - ✅ **Migrated to PostgreSQL** from SQLite for production reliability
 - ✅ **Added Settings Page** with 5-tab interface for configuration management
 - ✅ **Dynamic Stock Classes** - Create stock classes from Security Type + Series combinations
@@ -425,3 +508,4 @@ For issues and questions:
 - Open an issue on GitHub
 - Check the [Phoenix Framework documentation](https://hexdocs.pm/phoenix/)
 - Visit the [Elixir Forum](https://elixirforum.com/)
+
