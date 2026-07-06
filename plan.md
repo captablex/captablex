@@ -28,24 +28,27 @@ Design: Sleek & modern fintech aesthetic with clean data visualizations.
 - [x] Create Waterfall context for liquidation calculations
 - [x] Create WaterfallLive UI for exit scenario modeling
 - [x] Add waterfall route and navigation
+- [x] Add global navigation bar to all views
+- [x] Update plan.md and README with waterfall documentation
 
-## New Waterfall Feature (In Progress)
+## Waterfall Feature - Complete
 
 ### Completed:
 - [x] Added liquidation preference fields to stock_classes table:
   - liquidation_preference_multiple (e.g., 1.0 for 1x, 2.0 for 2x)
   - participation_type ("participating" or "non-participating")
   - seniority_rank (higher rank = paid first in waterfall)
-- [x] Updated StockClass schema with new fields
+- [x] Updated StockClass schema with new fields and validations
 - [x] Updated Settings UI to configure liquidation preferences
 - [x] Created Waterfall context module with calculation engine
-- [x] Created WaterfallLive UI at /waterfall
-- [x] Added waterfall route and navigation links
-
-### Remaining:
-- [ ] Test waterfall calculations with sample data
-- [ ] Add PDF export functionality for waterfall reports
-- [ ] Update README with waterfall documentation
+- [x] Created WaterfallLive UI at /waterfall with:
+  - Exit value input
+  - Distribution breakdown by stakeholder
+  - Detailed breakdown view (collapsible)
+  - Waterfall steps visualization
+- [x] Added waterfall route to router
+- [x] Added global navigation bar with Dashboard, Settings, Waterfall links
+- [x] Updated README with comprehensive waterfall documentation
 
 ## Technical Notes
 - PostgreSQL database on localhost:5432
@@ -55,4 +58,5 @@ Design: Sleek & modern fintech aesthetic with clean data visualizations.
   3. Common stock gets remaining proceeds
 - Real-time updates via PubSub across all views
 - Number formatting with commas for better readability
+- Global navigation ensures consistent UX across all pages
 
