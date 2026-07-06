@@ -9,7 +9,7 @@ defmodule Captablex.Waterfall do
   import Ecto.Query
   alias Captablex.Repo
   alias Captablex.CapTable.StockClass
-  alias Captablex.{Security, Stakeholder}
+  alias Captablex.{SecurityIssuance, Stakeholder}
 
   @doc """
   Calculates the liquidation waterfall for a given exit value.
@@ -63,7 +63,7 @@ defmodule Captablex.Waterfall do
   end
 
   defp load_securities_with_details do
-    from(s in Security,
+    from(s in SecurityIssuance,
       join: sc in StockClass,
       on: s.stock_class_id == sc.id,
       join: sh in Stakeholder,
