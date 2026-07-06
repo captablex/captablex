@@ -32,6 +32,13 @@
         </button>
         <button
           phx-click="switch_tab"
+          phx-value-tab="stock_classes"
+          class={tab_class(@active_tab, "stock_classes")}
+        >
+          Stock Classes
+        </button>
+        <button
+          phx-click="switch_tab"
           phx-value-tab="stakeholders"
           class={tab_class(@active_tab, "stakeholders")}
         >
@@ -220,6 +227,90 @@
                 <tr :if={@series == []} class="hover:bg-slate-800/30">
                   <td colspan="3" class="px-6 py-8 text-center text-slate-500">
                     No series configured. Click "Add Series" to get started.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+<!-- Stock Classes Tab -->
+        <div :if={@active_tab == "stock_classes"} class="space-y-4">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white">Stock Classes</h2>
+            <button
+              phx-click="open_stock_class_modal"
+              class="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg font-medium transition-colors"
+            >
+              + Add Stock Class
+            </button>
+          </div>
+
+          <div class="bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-hidden">
+            <table class="w-full">
+              <thead class="bg-slate-800/50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    Security Type
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    Series
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    Shares Authorized
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    Par Value
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    Price/Share
+                  </th>
+                  <th class="px-6 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-700/50">
+                <tr
+                  :for={stock_class <- @stock_classes}
+                  class="hover:bg-slate-800/30 transition-colors"
+                >
+                  <td class="px-6 py-4 text-sm text-white font-medium">
+                    {stock_class.security_type}
+                  </td>
+                  <td class="px-6 py-4 text-sm text-slate-400">{stock_class.series}</td>
+                  <td class="px-6 py-4 text-sm text-slate-400">
+                    {Number.Delimit.number_to_delimited(stock_class.shares_authorized)}
+                  </td>
+                  <td class="px-6 py-4 text-sm text-slate-400">
+                    {if stock_class.par_value, do: "$#{stock_class.par_value}", else: "—"}
+                  </td>
+                  <td class="px-6 py-4 text-sm text-slate-400">
+                    {if stock_class.price_per_share,
+                      do: "$#{stock_class.price_per_share}",
+                      else: "—"}
+                  </td>
+                  <td class="px-6 py-4 text-right text-sm space-x-2">
+                    <button
+                      phx-click="edit_stock_class"
+                      phx-value-id={stock_class.id}
+                      class="text-cyan-400 hover:text-cyan-300 font-medium"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      phx-click="delete_stock_class"
+                      phx-value-id={stock_class.id}
+                      data-confirm="Are you sure? This will affect any securities using this stock class."
+                      class="text-red-400 hover:text-red-300 font-medium"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+                <tr :if={@stock_classes == []} class="hover:bg-slate-800/30">
+                  <td colspan="6" class="px-6 py-8 text-center text-slate-500">
+                    No stock classes configured. Click "Add Stock Class" to get started.
                   </td>
                 </tr>
               </tbody>
@@ -439,6 +530,122 @@
             <button
               type="button"
               phx-click="close_stakeholder_modal"
+              class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </.form>
+      </div>
+    </div>
+  </div>
+  <!-- Stock Class Modal -->
+  <div
+    :if={@show_stock_class_modal}
+    class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+    phx-click="close_stock_class_modal"
+  >
+    <div
+      class="bg-slate-800 rounded-lg shadow-2xl border border-slate-700 w-full max-w-md"
+      phx-click="noop"
+      phx-window-keydown="close_stock_class_modal"
+      phx-key="escape"
+    >
+      <div class="p-6">
+        <h3 class="text-xl font-semibold text-white mb-4">
+          {if @editing_stock_class, do: "Edit", else: "Add"} Stock Class
+        </h3>
+
+        <.form
+          for={@stock_class_form}
+          id="stock-class-form"
+          phx-submit="save_stock_class"
+          class="space-y-4"
+        >
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">
+              Security Type *
+            </label>
+            <select
+              name="stock_class[security_type]"
+              value={@stock_class_form[:security_type].value}
+              class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+            >
+              <option value="">Select security type...</option>
+              <option :for={opt <- @security_types} value={opt.value}>{opt.value}</option>
+            </select>
+            <p
+              :if={@stock_class_form[:security_type].errors != []}
+              class="mt-1 text-sm text-red-400"
+            >
+              {translate_error(hd(@stock_class_form[:security_type].errors))}
+            </p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Series *</label>
+            <select
+              name="stock_class[series]"
+              value={@stock_class_form[:series].value}
+              class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+            >
+              <option value="">Select series...</option>
+              <option :for={opt <- @series} value={opt.value}>{opt.value}</option>
+            </select>
+            <p
+              :if={@stock_class_form[:series].errors != []}
+              class="mt-1 text-sm text-red-400"
+            >
+              {translate_error(hd(@stock_class_form[:series].errors))}
+            </p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">
+              Shares Authorized *
+            </label>
+            <.input
+              field={@stock_class_form[:shares_authorized]}
+              type="number"
+              class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+              placeholder="10000000"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Par Value</label>
+            <.input
+              field={@stock_class_form[:par_value]}
+              type="number"
+              step="0.0001"
+              class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+              placeholder="0.0001"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">
+              Price Per Share
+            </label>
+            <.input
+              field={@stock_class_form[:price_per_share]}
+              type="number"
+              step="0.01"
+              class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+              placeholder="1.50"
+            />
+          </div>
+
+          <div class="flex gap-3 pt-4">
+            <button
+              type="submit"
+              class="flex-1 px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg font-medium transition-colors"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              phx-click="close_stock_class_modal"
               class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors"
             >
               Cancel
