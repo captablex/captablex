@@ -35,9 +35,48 @@ defmodule CaptablexWeb.Layouts do
 
   def app(assigns) do
     ~H"""
-    <main>
-      {render_slot(@inner_block)}
-    </main>
+    <div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <!-- Global Navigation Bar -->
+      <nav class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700/50 sticky top-0 z-50">
+        <div class="mx-auto max-w-7xl px-6">
+          <div class="flex items-center justify-between h-16">
+            <!-- Logo/Brand -->
+            <div class="flex items-center gap-8">
+              <a href="/" class="text-xl font-bold text-white hover:text-cyan-400 transition-colors">
+                CapTablex
+              </a>
+              
+    <!-- Navigation Links -->
+              <div class="flex gap-2">
+                <a
+                  href="/"
+                  class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-colors"
+                >
+                  Dashboard
+                </a>
+                <a
+                  href="/settings"
+                  class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-colors"
+                >
+                  Settings
+                </a>
+                <a
+                  href="/waterfall"
+                  class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-colors"
+                >
+                  Waterfall
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+      
+    <!-- Main Content -->
+      <main>
+        {render_slot(@inner_block)}
+      </main>
+    </div>
 
     <.flash_group flash={@flash} />
     """
