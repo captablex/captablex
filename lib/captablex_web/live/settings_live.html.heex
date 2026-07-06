@@ -280,7 +280,7 @@
                   </td>
                   <td class="px-6 py-4 text-sm text-slate-400">{stock_class.series}</td>
                   <td class="px-6 py-4 text-sm text-slate-400">
-                    {Number.Delimit.number_to_delimited(stock_class.shares_authorized)}
+                    {stock_class.shares_authorized}
                   </td>
                   <td class="px-6 py-4 text-sm text-slate-400">
                     {if stock_class.par_value, do: "$#{stock_class.par_value}", else: "—"}
