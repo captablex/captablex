@@ -28,6 +28,6 @@ defmodule Captablex.CapTable.StockClass do
   Format: "Security Type - Series"
   """
   def display_name(%__MODULE__{security_type: security_type, series: series}) do
-    "#{security_type} - #{series}"
+    "#{stock_class.security_type} - #{stock_class.series}"
   end
 end
