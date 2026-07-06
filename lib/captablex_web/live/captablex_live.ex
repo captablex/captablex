@@ -178,7 +178,11 @@ defmodule CaptablexWeb.CaptablexLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-6 py-8">
+      <div
+        phx-hook="Download"
+        id="download-hook"
+        class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-6 py-8"
+      >
         <!-- Header -->
         <div class="mx-auto max-w-7xl">
           <div class="mb-8 flex items-center justify-between">
