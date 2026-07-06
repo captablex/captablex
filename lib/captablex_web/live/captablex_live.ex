@@ -192,6 +192,12 @@ defmodule CaptablexWeb.CaptablexLive do
               <p class="mt-1 text-slate-400">Manage your company's equity ownership</p>
             </div>
             <div class="flex space-x-3">
+              <.link
+                navigate={~p"/settings"}
+                class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-700"
+              >
+                Settings
+              </.link>
               <button
                 phx-click="export_ocf"
                 class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-700"
