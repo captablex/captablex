@@ -636,6 +636,52 @@
             />
           </div>
 
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">
+              Liquidation Preference Multiple
+            </label>
+            <.input
+              field={@stock_class_form[:liquidation_preference_multiple]}
+              type="number"
+              step="0.01"
+              class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+              placeholder="1.0"
+            />
+            <p class="mt-1 text-xs text-slate-500">e.g., 1.0 for 1x, 2.0 for 2x preference</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">
+              Participation Type
+            </label>
+            <select
+              name="stock_class[participation_type]"
+              value={@stock_class_form[:participation_type].value}
+              class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+            >
+              <option value="non-participating">Non-Participating</option>
+              <option value="participating">Participating</option>
+            </select>
+            <p class="mt-1 text-xs text-slate-500">
+              Participating preferred gets liquidation preference + pro-rata share
+            </p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">
+              Seniority Rank
+            </label>
+            <.input
+              field={@stock_class_form[:seniority_rank]}
+              type="number"
+              class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+              placeholder="0"
+            />
+            <p class="mt-1 text-xs text-slate-500">
+              Higher ranks get paid first in waterfall (0 = common, 1+ = preferred)
+            </p>
+          </div>
+
           <div class="flex gap-3 pt-4">
             <button
               type="submit"
