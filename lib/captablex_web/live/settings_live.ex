@@ -168,6 +168,11 @@ defmodule CaptablexWeb.SettingsLive do
   end
 
   @impl true
+  def handle_event("noop", _params, socket) do
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_info({:option_created, _option}, socket) do
     {:noreply, load_all_data(socket)}
   end
