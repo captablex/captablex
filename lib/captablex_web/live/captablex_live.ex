@@ -2,6 +2,7 @@ defmodule CaptablexWeb.CaptablexLive do
   use CaptablexWeb, :live_view
 
   alias Captablex
+  alias Captablex.CapTable.StockClass
 
   def mount(_params, _session, socket) do
     socket =
@@ -149,8 +150,8 @@ defmodule CaptablexWeb.CaptablexLive do
         Enum.map(assigns.stock_classes, fn stock_class ->
           %{
             "id" => "stock-class-#{stock_class.id}",
-            "name" => stock_class.name,
-            "class_type" => String.upcase(stock_class.class_type),
+            "name" => StockClass.display_name(stock_class),
+            "class_type" => String.upcase(stock_class.security_type),
             "shares_authorized" => stock_class.shares_authorized,
             "par_value" => Decimal.to_string(stock_class.par_value || Decimal.new("0"))
           }
@@ -483,7 +484,9 @@ defmodule CaptablexWeb.CaptablexLive do
               >
                 <option value="">Select stock class</option>
                 <%= for stock_class <- @stock_classes do %>
-                  <option value={stock_class.id}>{stock_class.name}</option>
+                  <option value={stock_class.id}>
+                    {StockClass.display_name(stock_class)}
+                  </option>
                 <% end %>
               </select>
             </div>
