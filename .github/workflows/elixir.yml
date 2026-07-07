@@ -42,6 +42,14 @@ jobs:
       with:
         elixir-version: '1.15.2' # [Required] Define the Elixir version
         otp-version: '26.0'      # [Required] Define the Erlang/OTP version
+    - name: Install wkhtmltopdf dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y xvfb libxrender1 libfontconfig1 libxtst6 xauth
+    - name: Install wkhtmltopdf
+      run: |
+        wget https://github.com
+        sudo dpkg -i wkhtmltox_0.12.6-1.bionic_amd64.deb || sudo apt-get install -f -y  
     - name: Restore dependencies cache
       uses: actions/cache@v3
       with:
