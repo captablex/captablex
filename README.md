@@ -1,4 +1,4 @@
-# Captablex
+# CapTablex
 
 A modern cap table management system built with Phoenix LiveView for tracking equity ownership, stock classes, and transactions in real-time. Initially vibe coded via [Phoenix.new](https://phoenix.new/) and based on [Open Cap Format (OCF)](https://github.com/Open-Cap-Table-Coalition/Open-Cap-Format-OCF). YMMV.
 
