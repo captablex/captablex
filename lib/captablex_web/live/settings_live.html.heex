@@ -675,10 +675,15 @@
               field={@stock_class_form[:seniority_rank]}
               type="number"
               class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
-              placeholder="0"
+              placeholder="0 for Common, 1+ for Preferred"
             />
             <p class="mt-1 text-xs text-slate-500">
-              Higher ranks get paid first in waterfall (0 = common, 1+ = preferred)
+              <p class="mt-1 text-xs text-slate-500">
+                Higher ranks get paid first in waterfall. Use 0 for Common stock, 1 for Series A Preferred, 2 for Series B Preferred, etc.
+              </p>
+              <p class="mt-1 text-xs text-amber-400 font-medium">
+                ⚠️ Warning: Rank 0 is treated as Common stock regardless of Security Type selected above
+              </p>
             </p>
           </div>
 

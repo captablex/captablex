@@ -1,4 +1,4 @@
-<Layouts.app flash={@flash}>
+<Layouts.app flash={@flash} phx-hook="Download" id="waterfall-download">
   <div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-6 py-8">
     <!-- Header -->
     <div class="mb-8">
@@ -45,6 +45,14 @@
               class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors"
             >
               Clear
+            </button>
+            <button
+              :if={@waterfall_result}
+              type="button"
+              phx-click="export_pdf"
+              class="px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors"
+            >
+              Export PDF
             </button>
           </div>
           <p class="mt-2 text-xs text-slate-500">

@@ -25,6 +25,10 @@ import topbar from "../vendor/topbar";
 
 let Hooks = {};
 
+// Import download hook for PDF exports
+import DownloadHook from "./download_hook";
+Hooks.Download = DownloadHook;
+
 Hooks.Download = {
   mounted() {
     this.handleEvent("download", ({ filename, content, mime_type }) => {

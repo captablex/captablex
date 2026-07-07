@@ -24,6 +24,25 @@ defmodule CaptablexWeb.CaptablexLive do
     {:ok, socket}
   end
 
+  @impl true
+  def handle_event("export_pdf", _params, socket) do
+    case Captablex.PdfExport.generate_cap_table_pdf() do
+      {:ok, pdf_path} ->
+        # Send file download to client
+        {:noreply,
+         socket
+         |> push_event("download", %{
+           url: "/downloads/#{Path.basename(pdf_path)}",
+           filename: "cap_table_#{Date.utc_today()}.pdf"
+         })}
+
+      {:error, reason} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Failed to generate PDF: #{inspect(reason)}")}
+    end
+  end
+
   defp format_number(number) when is_integer(number) do
     number
     |> Integer.to_string()

@@ -1,26 +1,21 @@
+// Download hook for handling PDF file downloads
 export const DownloadHook = {
   mounted() {
-    this.handleEvent("download", ({ filename, content, mime_type }) => {
-      // Create a blob from the content
-      const blob = new Blob([content], { type: mime_type });
+    this.handleEvent("download", ({ url, filename }) => {
+      // Create a temporary anchor element
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.style.display = "none";
 
-      // Create a temporary URL for the blob
-      const url = window.URL.createObjectURL(blob);
-
-      // Create a temporary anchor element to trigger download
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-
-      // Trigger the download
-      a.click();
-
-      // Clean up
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+      // Append to body, trigger click, then remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
       console.log(`Downloaded: ${filename}`);
     });
   },
 };
+
+export default DownloadHook;
