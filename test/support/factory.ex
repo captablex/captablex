@@ -26,14 +26,15 @@ defmodule Captablex.Factory do
     attrs = Enum.into(attrs, %{})
 
     %StockClass{
-      class_type: Map.get(attrs, :class_type, "common"),
-      name: Map.get(attrs, :name, "Common Stock"),
+      security_type: Map.get(attrs, :security_type, "common"),
+      series: Map.get(attrs, :series, "Seed"),
       shares_authorized: Map.get(attrs, :shares_authorized, 10_000_000),
-      par_value: Map.get(attrs, :par_value, Decimal.new("0.01"))
+      par_value: Map.get(attrs, :par_value, Decimal.new("0.01")),
+      price_per_share: Map.get(attrs, :price_per_share, Decimal.new("1.00"))
     }
   end
 
-  def build(:security, attrs) do
+  def build(:security_issuance, attrs) do
     attrs = Enum.into(attrs, %{})
 
     stakeholder =
@@ -65,8 +66,8 @@ defmodule Captablex.Factory do
       end)
 
     security =
-      Map.get_lazy(attrs, :security, fn ->
-        insert(:security, stakeholder: stakeholder)
+      Map.get_lazy(attrs, :security_issuance, fn ->
+        insert(:security_issuance, stakeholder: stakeholder)
       end)
 
     %Transaction{

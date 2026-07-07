@@ -11,15 +11,15 @@ defmodule CaptablexWeb.CaptablexLiveTest do
       # Create test data
       stakeholder1 = insert(:stakeholder, name: "Alice Johnson", stakeholder_type: "individual")
       stakeholder2 = insert(:stakeholder, name: "Bob Smith", stakeholder_type: "individual")
-      stock_class = insert(:stock_class, name: "Common Stock", shares_authorized: 10_000_000)
+      stock_class = insert(:stock_class, security_type: "Common", series: "Seed", shares_authorized: 10_000_000, par_value: 0.0001)
 
-      insert(:security,
+      insert(:security_issuance,
         stakeholder: stakeholder1,
         stock_class: stock_class,
         shares: 6_000_000
       )
 
-      insert(:security,
+      insert(:security_issuance,
         stakeholder: stakeholder2,
         stock_class: stock_class,
         shares: 4_000_000
@@ -40,8 +40,8 @@ defmodule CaptablexWeb.CaptablexLiveTest do
 
     test "displays ownership breakdown table", %{conn: conn} do
       stakeholder = insert(:stakeholder, name: "Charlie Brown", stakeholder_type: "individual")
-      stock_class = insert(:stock_class, shares_authorized: 1_000_000)
-      insert(:security, stakeholder: stakeholder, stock_class: stock_class, shares: 500_000)
+      stock_class = insert(:stock_class, series: "Seed", shares_authorized: 1_000_000)
+      insert(:security_issuance, stakeholder: stakeholder, stock_class: stock_class, shares: 500_000)
 
       {:ok, _view, html} = live(conn, "/")
 
@@ -54,11 +54,11 @@ defmodule CaptablexWeb.CaptablexLiveTest do
     test "displays transaction history", %{conn: conn} do
       stakeholder = insert(:stakeholder, name: "Diana Prince")
       stock_class = insert(:stock_class)
-      security = insert(:security, stakeholder: stakeholder, stock_class: stock_class)
+      security_issuance = insert(:security_issuance, stakeholder: stakeholder, stock_class: stock_class)
 
       insert(:transaction,
         stakeholder: stakeholder,
-        security: security,
+        security_issuance: security_issuance,
         transaction_type: "issuance",
         quantity: 1_000_000
       )
@@ -149,7 +149,7 @@ defmodule CaptablexWeb.CaptablexLiveTest do
   describe "Issue Shares Form" do
     setup do
       stakeholder = insert(:stakeholder, name: "Grace Hopper")
-      stock_class = insert(:stock_class, name: "Preferred Stock")
+      stock_class = insert(:stock_class, series: "Seed", security_type: "Preferred Stock")
       %{stakeholder: stakeholder, stock_class: stock_class}
     end
 
@@ -184,7 +184,7 @@ defmodule CaptablexWeb.CaptablexLiveTest do
              )
              |> render_submit()
 
-      # Verify security was created
+      # Verify security issuance was created
       security = Repo.get_by(Captablex.SecurityIssuance, certificate_id: "CERT-001")
       assert security
       assert security.shares == 500_000

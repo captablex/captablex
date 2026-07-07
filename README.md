@@ -1,4 +1,4 @@
-# Captablex
+# CapTablex
 
 A modern cap table management system built with Phoenix LiveView, implementing the Open Cap Format (OCF) standard with advanced liquidation waterfall modeling and PDF export capabilities.
 
@@ -50,6 +50,58 @@ A modern cap table management system built with Phoenix LiveView, implementing t
 - **PubSub** - Real-time updates across sessions
 - **Number** - Currency and number formatting
 - **PDF Generator** - HTML-to-PDF conversion with wkhtmltopdf
+[![Elixir CI](https://github.com/captablex/captablex/actions/workflows/elixir.yml/badge.svg)](https://github.com/captablex/captablex/actions/workflows/elixir.yml)
+
+A modern cap table management system built with Phoenix LiveView for tracking equity ownership, stock classes, and transactions in real-time. Initially vibe coded via [Phoenix.new](https://phoenix.new/) and based on [Open Cap Format (OCF)](https://github.com/Open-Cap-Table-Coalition/Open-Cap-Format-OCF). YMMV.
+
+## 🚀 Features
+
+### Core Functionality
+- **Real-time Dashboard** - Live updates across all connected browsers via Phoenix PubSub
+- **Stakeholder Management** - Track individuals and institutions holding equity
+- **Dynamic Stock Class Configuration** - Configure stock classes via Security Type + Series combinations
+- **Settings Management** - Centralized configuration for dropdown options and stock classes
+- **Share Issuance** - Issue shares with full transaction tracking
+- **Ownership Breakdown** - Real-time calculation of ownership percentages
+- **Transaction History** - Complete audit trail of all equity events
+- **OCF Export** - Export cap table data in Open Cap Table Format (OCF 1.0.0)
+- **Liquidation Waterfall Calculator** - Model exit scenarios and distribution outcomes
+
+### Settings Page
+Manage all configuration options in one place:
+- **Security Types** - Define security types (e.g., "Common Stock", "Preferred Stock")
+- **Stakeholder Types** - Configure stakeholder categories
+- **Series** - Manage series (e.g., "Seed", "Series A", "Series B")
+- **Stock Classes** - Create stock classes from Security Type + Series combinations
+  - Configure liquidation preferences (1x, 2x, etc.)
+  - Set participation type (participating vs. non-participating)
+  - Define seniority rank for waterfall ordering
+- **Stakeholders** - Full CRUD management for all stakeholders
+
+### Waterfall Calculator (NEW!)
+Model liquidation scenarios and see detailed distribution outcomes:
+- **Exit Scenario Modeling** - Input total exit value to see distribution
+- **Seniority-Based Distribution** - Higher seniority ranks paid first
+- **Liquidation Preferences** - Automatic calculation of preference payouts
+- **Participation Rights** - Participating preferred gets preference + pro-rata share
+- **Step-by-Step Breakdown** - Detailed waterfall calculation steps
+- **Stakeholder Summary** - See total distribution per stakeholder
+- **Visual Analytics** - Clear breakdown of distribution types
+
+#### How Liquidation Waterfall Works
+
+The waterfall follows standard venture capital distribution logic:
+
+1. **Liquidation Preferences (by Seniority)**
+   - Stock classes are processed in descending seniority rank order
+   - Higher seniority rank = paid first
+   - Each class receives: `shares × price_per_share × liquidation_preference_multiple`
+   - Example: 1,000,000 shares × $1.00 × 2.0x = $2,000,000 preference
+
+2. **Participation (if applicable)**
+   - After preferences are paid, participating preferred gets additional pro-rata share
+   - Non-participating preferred does NOT participate further
+   - Common stock always participates pro-rata in remaining proceeds
 
 ## Installation
 
