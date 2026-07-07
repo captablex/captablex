@@ -46,6 +46,14 @@
             >
               Clear
             </button>
+            <button
+              :if={@waterfall_result}
+              type="button"
+              phx-click="export_pdf"
+              class="px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors"
+            >
+              Export PDF
+            </button>
           </div>
           <p class="mt-2 text-xs text-slate-500">
             Enter exit proceeds to model distribution waterfall
