@@ -30,6 +30,8 @@ Design: Sleek & modern fintech aesthetic with clean data visualizations.
 - [x] Add waterfall route and navigation
 - [x] Add global navigation bar to all views
 - [x] Update plan.md and README with waterfall documentation
+- [x] Fix SecurityIssuance alias in Waterfall module
+- [x] Add smart defaults and validation for seniority rank
 
 ## Waterfall Feature - Complete
 
@@ -40,6 +42,9 @@ Design: Sleek & modern fintech aesthetic with clean data visualizations.
   - seniority_rank (higher rank = paid first in waterfall)
 - [x] Updated StockClass schema with new fields and validations
 - [x] Updated Settings UI to configure liquidation preferences
+  - Added clear warning that rank 0 = Common stock
+  - Added helpful placeholder text for ranking
+  - Improved helper text explaining ranking system
 - [x] Created Waterfall context module with calculation engine
 - [x] Created WaterfallLive UI at /waterfall with:
   - Exit value input
@@ -49,6 +54,7 @@ Design: Sleek & modern fintech aesthetic with clean data visualizations.
 - [x] Added waterfall route to router
 - [x] Added global navigation bar with Dashboard, Settings, Waterfall links
 - [x] Updated README with comprehensive waterfall documentation
+- [x] Fixed runtime error with SecurityIssuance alias
 
 ## Technical Notes
 - PostgreSQL database on localhost:5432
@@ -59,4 +65,6 @@ Design: Sleek & modern fintech aesthetic with clean data visualizations.
 - Real-time updates via PubSub across all views
 - Number formatting with commas for better readability
 - Global navigation ensures consistent UX across all pages
+- Seniority rank 0 = Common stock, 1+ = Preferred (higher = more senior)
+
 
