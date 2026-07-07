@@ -2,6 +2,7 @@
 
 A modern cap table management system built with Phoenix LiveView, implementing the Open Cap Format (OCF) standard with advanced liquidation waterfall modeling and PDF export capabilities.
 
+
 ## Features
 
 ### Core Cap Table Management
