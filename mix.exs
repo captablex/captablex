@@ -60,6 +60,7 @@ defmodule Captablex.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:pdf_generator, "~> 0.6.2"},
+      {:pdf_generator, "~> 0.6.2"},
       {:pdf_generator, "~> 0.6.2"}
       {:number, "~> 1.0"}
     ]
