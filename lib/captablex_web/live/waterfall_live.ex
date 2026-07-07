@@ -48,6 +48,27 @@ defmodule CaptablexWeb.WaterfallLive do
      |> assign(:show_details, false)}
   end
 
+  @impl true
+  def handle_event("export_pdf", _params, socket) do
+    exit_value = socket.assigns.waterfall_result.total_exit_value
+
+    case Captablex.PdfExport.generate_waterfall_pdf(exit_value) do
+      {:ok, pdf_path} ->
+        # Send file download to client
+        {:noreply,
+         socket
+         |> push_event("download", %{
+           url: "/downloads/#{Path.basename(pdf_path)}",
+           filename: "waterfall_#{Date.utc_today()}.pdf"
+         })}
+
+      {:error, reason} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Failed to generate PDF: #{inspect(reason)}")}
+    end
+  end
+
   defp parse_exit_value(str) do
     # Remove commas and whitespace
     cleaned = String.replace(str, ~r/[,\s]/, "")
