@@ -1,6 +1,6 @@
 # Captablex
 
-A modern cap table management system built with Phoenix LiveView for tracking equity ownership, stock classes, and transactions in real-time.
+A modern cap table management system built with Phoenix LiveView for tracking equity ownership, stock classes, and transactions in real-time. Initially vibe coded via [Phoenix.new](https://phoenix.new/).
 
 ## 🚀 Features
 
